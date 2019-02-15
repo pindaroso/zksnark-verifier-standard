@@ -1,7 +1,8 @@
 ---
 eip: To be assigned <to be assigned>
-title: Token Commitment Standard - zk-SNARK methodology
-authors: Chaitanya Konda<chaitanya.konda@uk.ey.com>, Duncan Westland<duncan.westland@uk.ey.com>, Michael Connor<michael.connor@uk.ey.com>, Paul Brody<paul.brody@ey.com>
+title: zk-SNARK verifier standard
+authors: Michael Connor<michael.connor@uk.ey.com>, Chaitanya Konda<chaitanya.konda@uk.ey.com>, Duncan Westland<duncan.westland@uk.ey.com>
+thanks: Paul Brody<paul.brody@ey.com>, Harry R
 discussions-to: EY <https://github.com/EYBlockchain/zksnark-verifier-standard>
 status: WIP
 type: Standards Track
@@ -57,7 +58,7 @@ This standard was initially proposed by [EY](https://www.ey.com), and was inspir
 
 
 ```solidity
-pragma solidity ^0.4.14;
+pragma solidity ^0.4.24;
 
 
 /// @title EIP-XXXX Token Commitment Standard
@@ -66,13 +67,39 @@ pragma solidity ^0.4.14;
 
 interface EIP-XXXX /* is ERC165 */ {
 
+/// EVENTS
+
+
+  /// Verified
+
+    /// @dev This MUST emit once, and once only, every time a Proof is passed
+    ///  to this Verifier contract which evaluates as true.
+    /// @param {bytes32} _proofId
+    /// @param {bytes32} _vkId
+
+    event Verified(bytes32 indexed _proofId, bytes32 indexed _vkId);
+
+  /// NotVerified
+
+    /// @dev This MUST emit once, and once only, every time a Proof is passed
+    ///  to this Verifier contract which evaluates as false.
+    /// @param {bytes32} _proofId
+    /// @param {bytes32} _vkId
+
+    event NotVerified(bytes32 indexed _proofId, bytes32 indexed _vkId);
+
+  /// NotVerified
+
+    /// @dev This MUST emit every time a Verifying Key is loaded through this contract.
+    /// @param {bytes32} _vkId
+
+    event NewVkLoaded(bytes32 indexed _vkId);
+
+
 
 /// FUNCTIONS
 
-
-/// Functions to assign zk-SNARK-specific arguments to contract states:
-
-
+/// Notation:
 /// - Public Input Vector: often denoted as a vector 'x' in zk-SNARKs
 ///    literature. An arithmetic circuit function is created as an abstraction
 ///    of a particular type of zk-SNARK.
@@ -89,332 +116,61 @@ interface EIP-XXXX /* is ERC165 */ {
 ///    'proof' from: the proving key; their secret witness vector 'w'; and its
 ///    corresponding Public Input Vector 'x.'
 
-/// Note: some of the below functions are only required as a result of
-/// limitations of the EVM. Limitations include:
-/// - Block gas limit.
-/// - Limited stack space for functions' local variables.
 
-/// SECURITY WARNING!
-/// You SHOULD ensure appropriate checks are in place when calling the functions
-/// in this section.
-/// - When loading data into the variables of the contract, you SHOULD ensure
-///    each chunk can be uniquely identified, so that chunks can be reassembled
-///    correctly and unambiguously. If multiple parties all send data to this
-///    contract within the same block, then we don't want their chunks to
-///    become muddled.
-/// - If it is possible that the functions in this section can be called from
-///    another contract, then checks based on msg.sender alone might not be
-///    sufficient, since msg.sender will point to the calling contract (which
-///    multiple parties could be executing at any one time, thereby increasing
-///    the chances of 'chunk' loading collisions).
-
-
-  /// setPublicInputVectorLength
-
-    /// @notice Dimensionalises the length of the Public Input Vector,
-    ///  (often referred to as the 'public input string', x, in literature)
-    /// @dev The array being dimensionalised here is often very large, and will
-    ///  likely need to be loaded into this contract in 'chunks' (see the
-    ///  function `loadPublicInputVector`).
-    ///  Note: Each Public Input Vector uniquely corresponds to a Proof vector.
-    /// @param {uint} _length The length of the whole _input array that will be
-    ///  passed (in chunks of length <= _length) to the loadPublicInputVector()
-    ///  function.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-
-    function setPublicInputVectorLength(
-      uint _length,
-      uint256 _proofId
-      ) public {}
-
-
-  /// loadPublicInputVector
-
-    /// @notice Loads the Public Input Vector, (often referred to as the
-    ///  'public input string', x, in literature)
-    /// @dev As this array is often very large, and will likely need to be
-    ///  loaded into this contract in 'chunks'.
-    /// @param {uint[]} _input
-    /// @param {uint} _start Given the likely need to load vectors in
-    ///  'chunks', a _start parameter facilitates the correct ordering and
-    ///  positioning of each 'chunk' in the larger array.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-
-    function loadPublicInputVector(
-      uint[] _input,
-      uint _start,
-      uint256 _proofId
-      ) public {}
-
-
-  /// setProofLength
-
-    /// @notice Dimensionalises the length of the Proof Vector,
-    ///  (often referred to as the 'public input string', x, in literature)
-    /// @dev The array being dimensionalised here is often very large, and will
-    ///  likely need to be loaded into this contract in 'chunks' (see the
-    ///  function `loadPublicInputVector`).
-    /// @param {uint} _length The length of the whole _proof array that will be
-    ///  passed (in chunks of length <= _length) to the loadProof() function.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-
-    function setProofLength(
-      uint _length,
-      uint256 _proofId
-      ) public {}
-
-
-  /// loadProof
-
-    /// @notice Loads a proof into the contract.
-    /// @dev This function MUST store its input arguments. Although it would be
-    ///  simpler to pass the Proof parameters directly to the functions which
-    ///  use them (such as to `verifyProof` and `verify`), there is limited
-    ///  stack space available for each function's local variables. Separating
-    ///  the storage of the Proof parameters in this way should allow for
-    ///  verification of many forms of zk-SNARK.
-    /// @param {uint[][]} _proof An intentionally dynamic array, owing to the
-    ///  varying and constantly changing notations which are being developed
-    ///  by mathematicians for representing a zk-SNARK.
-    ///  zk-SNARK proofs as determined by the Pinnochio protocol, for example,
-    ///  might represent a proof with an array of 8 elements: [A, A', B, B', C,
-    ///  C', H, K], as per the paper "Succinct Non-Interactive Zero Knowledge
-    ///  for a von Neumann Architecture." p25 Fig 10 (b)).
-    ///  These Proof parameters don't have an intuitive explanation, and their
-    ///  derivation is outside the scope of this EIP-XXXX.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-
-    function loadProof(
-      uint[][] _proof,
-      uint256 _proofId
-      ) public {};
-
-
-  /// setVerifyingKeyLength
-
-    /// @notice Dimensionalises the Verifying Key's largest parameter;
-    ///  an array of length equal to the number of left-inputs of the  
-    ///  arithmetic circuit being verified, where each element is an encoding
-    ///  of an element of the set of left-input polynomials (as defined under
-    ///  Quadratic Arithmetic Program literature), evaluated at a random
-    ///  element of the QAP's finite field.
-    ///  This parameter is often denoted 'vk_IC' in zk-SNARKs literature (such
-    ///  as the paper "Succinct Non-Interactive Zero Knowledge for a von Neumann
-    ///  Architecture." p25 Fig 10).
-    /// @dev The array being dimensionalised here is often very large, and will
-    ///  likely need to be loaded into this contract in 'chunks' (see the
-    ///  function `loadVerifyingKeyPart2`).
-    /// @param {uint} _length The length of the 'vk_IC' parameter.
-
-    function setVerifyingKeyLength(
-      uint _length,
-      uint256 _vkId
-      ) public {}
-
-
-  /// loadVerifyingKeyPart1
+  /// loadVk
 
     /// @notice Loads the components which make up the verifying key.
-    ///  These components are often denoted: 'vk_A, vk_B, vk_C, vk_gamma,
-    ///  vk_gammaBeta1, vk_gammaBeta2, vk_Z, and vk_IC' in zk-SNARKs
-    ///  literature.
-    ///  Note, the parameter 'vk_IC' is loaded through a separate function
-    ///  `loadVerifyingKeyPart2`, because of its size, and to encourage modularity.
     ///  These parameters don't have an immediately intuitive explanation, and
     ///  their derivation is outside the scope of this EIP-XXXX.
-    /// @param {uint[][]} _vk The Verifying Key for an arithmetic circuit.
+    /// @param {uint256[]} _vk The Verifying Key for an arithmetic circuit.
     ///  An intentionally dynamic array, owing to the varying and constantly
     ///  changing notations which are being developed by mathematicians for
-    ///  representing a zk-SNARK.
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for the Verifying Key _vk.
+    ///  representing a zk-SNARK. Currently we avoid multi-dimensional arrays
+    ///  and structs when passing and returning arguments, due to current
+    ///  limitations in the EVM.
 
-    function loadVerifyingKeyPart1(
-      uint[][] _vk
-      uint256 _vkId
-      ) public {}
-
-
-  /// loadVerifyingKeyPart2
-
-    /// @notice Loads the Verifying Key's largest parameter, 'vk_IC'; an
-    ///  array of length equal to the number of left-inputs of the  
-    ///  arithmetic circuit being verified, where each element is an encoding
-    ///  of an element of the set of left-input polynomials (as defined under
-    ///  Quadratic Arithmetic Program literature) evaluated at a random element
-    ///  of the QAP's finite field.
-    /// @dev As this array is often very large, and will likely need to be
-    ///  loaded into this contract in 'chunks'. Hence, it is separated in
-    ///  this EIP from `loadVerifyingKeyPart1`, for modularity.
-    /// @param {uint[][]} _points An array where each element is an encoding
-    ///  of the set of left-input polynomials (as defined under Quadratic
-    ///  Arithmetic Program literature) evaluated at a random element of the
-    ///  QAP's finite field.
-    /// @param {uint} _start Given the likely need to load 'vk_IC' in
-    ///  'chunks', a _start parameter facilitates the correct ordering and
-    ///  positioning of each 'chunk' in the larger array.
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for the Verifying Key _vk.
-
-    function loadVerifyingKeyPart2(
-      uint[][] _points,
-      uint _start,
-      uint256 _vkId
-      ) public {}
-
-
-
-/// Functions for computation:
-
-
-  /// computeVkx
-
-    /// @notice 'vk_x' is notation which is commonly used in zk-SNARKs
-    ///  literature to represent a linear combination of the Quadratic
-    ///  Spanning Vector vk_IC with coefficients x (the Public Input Vector).
-    ///  `computeVkx` computes this linear combination. 'vk_x' is used in the
-    ///  main 'completeness' check of a Quadratic Arithmetic Program; that
-    ///  the prover's 'commitment' is 'true'. (In practice, the 'commitment' is
-    ///  abstracted into a set of 'proof' parameters which, when combined with
-    ///  the Verifying Key, demonstrate a solution to a polynomial divisibility
-    ///  problem which would be hard to replicate without a valid 'proof').
-    /// @dev `vk_IC` and the Public Input Vector are often very large, and
-    ///  will likely need to be loaded into this contract in 'chunks'.
-    /// @param {uint} _start. Given the likely need to load vk_IC and the
-    ///  Public Input Vector in 'chunks', the _start parameter is the position
-    ///  of the first element of a particular 'chunk' of the Public Input
-    ///  Vector. This ensures the linear combination can be calculated
-    ///  correctly.
-    /// @param {uint} _end. Given the likely need to load vk_IC and the
-    ///  Public Input Vector in 'chunks', the _end parameter is the position
-    ///  of the last element of a particular 'chunk' of the Public Input
-    ///  Vector. This ensures the linear combination can be calculated
-    ///  correctly.   
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for a Verifying Key _vk.
-
-    function computeVkx(
-      uint _start,
-      uint _end,
-      uint256 _vkId
-      ) public {}
-
-
-  /// verifyProof
-
-    /// @notice Checks the arguments of the Proof, through elliptic curve
-    ///  pairing functions.
-    /// @dev
-    ///  MUST return 0 if the Proof passes all checks (i.e. if the Proof is
-    ///  valid).
-    ///  Nonzero integers may be returned to aid in debugging.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for the Verifying Key to which the _proofId corresponds.
-    /// @return {uint} MUST return 0 if the Proof passes all checks (i.e. if
-    ///  the Proof is valid). Nonzero integers aid in Proof debugging and
-    ///  analysis.
-
-    function verifyProof(
-      uint256 _proofId,
-      uint256 _vkId
-      ) internal returns (uint)
-
-
-
-/// 'Front end' functions:
+    function loadVk(uint256[] _vk) public {}
 
 
   /// verify
 
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for the Verifying Key to which the _proofId corresponds.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for the Verifying Key to which the _proofId corresponds.
-    /// @return {bool} Return `true` if the Proof is evaluated as valid, and
-    ///  `false` otherwise.
+    /// @notice Checks the arguments of the Proof, through elliptic curve
+    ///  pairing functions.
+    /// @dev
+    ///  MUST return `true` if the Proof passes all checks (i.e. if the Proof is
+    ///  valid). MUST emit the Verified event in this case.
+    ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
+    ///  Proof is invalid). MUST emit the NotVerified event in this case.
+    /// @param {uint256[]} _proof A zk-SNARK.
+    /// @param {uint256[]} _inputs Public inputs which accompany the _proof.
+    /// @param {uint256} _vkId A unique identifier (known to this verifier
+    ///  contract) for the Verifying Key to which the _proof corresponds.
+    /// @return {bool} The result of the verification calculation.
 
-    function verify(
-      uint256 _proofID,
-      uint256 _vkId
-      ) public returns (bool)
-
-
-  /// getAddress
-
-    /// @return {address} The address of the deployed instance of this Verifier
-    ///  contract.
-
-    function getAddress() public returns(address)
+    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) public returns (bool) {}
 
 
-  /// getNewProofId
+  /// verify (overloaded)
 
-    /// @notice OPTIONAL. Returns a new proofId.
-    /// @dev MUST return a unique and unused proofId.
-    /// @return {uint256} A proofId.
+    /// @notice Checks the arguments of the Proof, through elliptic curve
+    ///  pairing functions.
+    /// @dev
+    ///  MUST return `true` if the Proof passes all checks (i.e. if the Proof is
+    ///  valid). MUST emit the Verified event in this case.
+    ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
+    ///  Proof is invalid). MUST emit the NotVerified event in this case.
+    /// @param {uint256[]} _proof A zk-SNARK.
+    /// @param {uint256[]} _inputs Public inputs which accompany the _proof.
+    /// @param {uint256} _vkId A unique identifier (known to this verifier
+    ///  contract) for the Verifying Key to which the _proof corresponds.
+    /// @param {uint256} _proofId A unique identifier (known to this verifier
+    ///  contract) for the _proof.
+    /// @return {bool} The result of the verification calculation.
 
-    function getNewProofId() returns (uint256)
+    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, bytes32 _proofId) public returns (bool) {}
 
-
-  /// getProof
-
-    /// @notice OPTIONAL. Takes a proofId and returns a Proof vector.
-    /// @dev MUST return the correct Proof vector, if applicable.
-    /// @param {uint256} _proofId A unique identifier (native to the this
-    ///  verifier contract) for the Proof.
-    /// @return {uint[][]} A Proof object.
-
-    function getProof(
-      _proofID,
-      ) public returns (uint[][])
-
-
-  /// getNewVkId
-
-    /// @notice OPTIONAL. Returns a new vkId.
-    /// @dev MUST return a unique and unused vkId.
-    /// @return {uint256} A vkId.
-
-    function getNewVkId() returns (uint256)
-
-
-  /// getVerifyingKey
-
-    /// @notice OPTIONAL. Takes a vkId and returns a Verifying Key.
-    /// @dev MUST return the correct Verifying Key vector, if applicable.
-    /// @param {uint256} _vkId A unique identifier (native to the this verifier
-    ///  contract) for a Verifying Key.
-    /// @return {uint[][]} A Verifying Key object.
-
-    function getVerifyingKey(
-      _vkID,
-      ) public returns (uint[][])
-
-
-
-
-/// EVENTS
-
-
-  /// Verified
-
-    /// @dev This MUST emit once, and once only, every time a Proof is passed
-    ///  to this Verifier contract.
-    /// @param {bool} _verified `true` if the Proof parameters are evaluated by
-    ///  this contract to be a valid zk-SNARK, and `false` otherwise.
-
-    event Verified(bool indexed _verified);
 
 }
-
 ```
 ### Interface
 ``` solidity
@@ -449,16 +205,16 @@ $vk$ or `_vk` - The verifying key for a particular circuit $C$.
 Both $pk$ and $vk$ are generated as a pair by some function $G$:
 $$(pk, vk) = G(\lambda, C)$$
 
-Note: $C$ can be represented unambiguously by either of `pk` or `vk`. In zk-SNARK constructions, `vk` is much smaller in size than `pk`, so as to enable succinct verification on-chain. Hence, `vk` is the representative of $C$ that we 'load' into the Verifier contract (through `loadVerifyingKeyPart1` and `loadVerifyingKeyPart2`) and hence it is the representative of $C$ that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `vkId`, where `vkId` serves as a more succinct mapping to `vk`.
+Note: $C$ can be represented unambiguously by either of `pk` or `vk`. In zk-SNARK constructions, `vk` is much smaller in size than `pk`, so as to enable succinct verification on-chain. Hence, `vk` is the representative of $C$ that we 'load' into the Verifier contract (through `loadVk`) and hence it is the representative of $C$ that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `vkId`, where `vkId` serves as a more succinct mapping to `vk`.
 
 $w$ - A 'private witness' string. A private argument to the circuit $C$ known only to the prover, which, when combined with the Public Input Vector argument $x$, comprises an argument of knowledge which satisfies the circuit $C$.
 
 $x$ or `_input` - A 'Public Input Vector'. A public argument to the circuit $C$ which, when combined with the private witness string $w$, comprises an argument of knowledge which satisfies the circuit $C$.
 
-$\pi$ or `proof` - an encoded vector of values which represents the 'prover's' 'argument of knowledge' of values $w$ and $x$ which satisfy the circuit $C$.
+$\pi$ or `_proof` - an encoded vector of values which represents the 'prover's' 'argument of knowledge' of values $w$ and $x$ which satisfy the circuit $C$.
 $$\pi = P(pk, x, w)$$
 
-Note: A single circuit $C$ could have very many distinct satisfying arguments, $\pi_i$, and so each `_proof` requires its own unique `_proofId` (the set of valid proofs maps surjectively onto the set of satisfiable circuits). Uniqueness of `_proofId`'s is important, since a `_proof` object will likely need to be loaded into the contract in 'chunks', through `loadProof()`.  
+Note: A single circuit $C$ could have very many distinct satisfying arguments, $\pi_i$, and so each (`_proof`, `_input`) pair requires its own unique `_proofId` (the set of valid proofs maps surjectively onto the set of satisfiable circuits). Uniqueness of `_proofId`'s is important.
 
 The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form $\pi$) through some verification function $V$.
 
@@ -468,52 +224,9 @@ $$V(vk, x, \pi)=\begin{cases}
   \end{cases}$$
 The `verify()` function of this specification serves the purpose of $V$; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
 
-Note, this is not to be confused with the `verifyProof()` function, which is intended to provide more granular debugging information through error codes (integers) - where (possibly confusingly) a `0` MUST be returned if the `proof` satisfies the arithmetic circuit.
 
-
-#### Justification of 'loading' functions:
-Several functions which 'load' data into the Verifier contract, are only required as a result of limitations of the EVM.
-Limitations include:
-- Block gas limit.
-- Limited stack space for functions' local variables.
-
-Both the Public Input Vector and Verifying Key can be very large strings; often too large to practically store within one block transaction. The following functions provide an interface for 'loading' data into the contract across multiple blocks:
-
-- `setPublicInputVectorLength()`
-- `loadPublicInputVector()`
-
-- `setVerifyingKeyLength()`
-- `loadVerifyingKeyPart1()`
-- `loadVerifyingKeyPart2()`
-
-- `setProofLength()`
-- `loadProof()`
-
-Note, 'loadVerifyingKey' has been split into parts 1 and 2 due to the size of the Verifying Key and to promote modular code (see the Specification itself for more information).
-
-Consideration was given to the idea of passing the Public Input Vector, the Verifying Key, and the Proof vectors directly as arguments to functions such as `verify` and `verifyProof`. However, local storage within functions is limited. By separating the loading of these vectors to dedicated functions, developers will have more local variables available when writing the bodies of the other functions of this interface.
-
-#### Security Considerations
-Appropriate checks will need to be in place when calling the 'loading' functions of this specification.
-When loading data in 'chunks' into the variables of the contract, developers will need to ensure that each 'chunk' can be uniquely identified, so that chunks can be reassembled correctly and unambiguously.
-If multiple parties all send data to this contract within the same block, then we don't want their chunks to become muddled (causing proofs, verifying keys, or public input vectors to become nonsense).
-Hence, the notions of unique `_proofId` and `vkId` have been built into the arguments of this specification.
-If it is possible that the 'loading' functions can be called from another contract, then checks based on msg.sender alone might not be sufficient, since msg.sender will point to the calling contract (which multiple parties could be executing at any one time, thereby increasing the chances of 'chunk' loading collisions).
-Using tx.origin for authentication checks is prone to security flaws. `ECRECOVER` could be used to trace the digital signature of a caller, but this might be too expensive and slow.
-
-#### 'Getter' functions
-
-The Specification provides an OPTIONAL interface for retrieving stored data from the contract. Optional functions include:
-
-- `getProof`
-- `getVerifyingKey`
-
-By including these functions, third parties will be able to query Proofs and Verification Keys, and thereby independently verify others' SNARKs.
-
-There are also optional functions to request a previously unused ('new') `proofId` or `vkId` from the contract, to avoid 'chunk loading' collisions:
-
-- `getNewProofId`
-- `getNewVkId`
+#### Justification of 'loadVk' function:
+There are several 'objects' which need to be passed into the Verifier contract. We recommend to load only the verifying keys into persistent storage. A proof and its corresponding inputs are 'one-time' 'objects' and so should ideally not be stored, to save on gas costs.
 
 <sub><sub>[Back to top](#contents)</sub></sub>
 
@@ -533,15 +246,14 @@ There are also optional functions to request a previously unused ('new') `proofI
 ## Test Cases
 <!--Test cases for an implementation are mandatory for EIPs that are affecting consensus changes. Other EIPs can choose to include links to test cases if applicable.-->
 
+Truffle tests of example implementations are included in this Repo.
+
 <sub><sub>[Back to top](#contents)</sub></sub>
 
 
 ## Implementations
 <!--The implementations must be completed before any EIP is given status "Final", but it need not be completed before the EIP is accepted. While there is merit to the approach of reaching consensus on the specification and rationale before writing code, the principle of "rough consensus and running code" is still useful when it comes to resolving many discussions of API details.-->
-- [EY](https://www.ey.com) have [implemented](#5.1) a basic business agreement on the public Ethereum network with full privacy and auditability.  
-This agreement uses 'shield contracts' (which use zk-SNARKs) to mint and transfer non-fungible, tokenised representations of real-world objects privately through a supply chain. The necessary payments between all parties in the supply chain are made similarly through private transactions of fungible tokens (e.g. Ether).
-All of these transactions are facilitated through Token Commitment Contracts which direct proofs to Verifier contracts. The originally published demonstration of EY's work uses verifier contracts which do not exactly adhere to this specification.
-
+Detailed example implementations and Truffle tests of these example implementations are included in this Repo.
 
 <sub><sub>[Back to top](#contents)</sub></sub>
 
