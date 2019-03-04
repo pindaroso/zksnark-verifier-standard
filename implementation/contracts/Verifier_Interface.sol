@@ -27,14 +27,10 @@ interface Verifier_Interface {
 
   event NotVerified(bytes32 indexed _proofId, bytes32 indexed _vkId);
 
-  event NewVkLoaded(bytes32 indexed _vkId);
+  function verify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bool);
 
-  function initialize(address _owner, address _registry) external;
+  function verifyFromRegistry(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bool);
 
-  function loadVk(uint256[] _vk) external;
-
-  function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) external returns (bool);
-
-  function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, bytes32 _proofId) external returns (bool);
+  function getRegistry() external view returns (address);
 
 }

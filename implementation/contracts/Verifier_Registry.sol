@@ -28,7 +28,7 @@ contract Verifier_Registry {
     using Verifier_Register_Library for *;
 
 
-    event NewProofSubmitted(bytes32 indexed _proofId, uint256[] _proof, uint64[] _inputs);
+    event NewProofSubmitted(bytes32 indexed _proofId, uint256[] _proof, uint256[] _inputs);
 
     event NewVkRegistered(bytes32 indexed _vkId);
 
@@ -98,7 +98,7 @@ contract Verifier_Registry {
         return vkId;
     }
 
-    function submitProof(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) public returns (bytes32) {
+    function submitProof(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (bytes32) {
 
       require(vkRegister[_vkId].vkId == _vkId, "vkId not yet registered");
       //duplicate proofs are allowed - no check required!
@@ -121,7 +121,7 @@ contract Verifier_Registry {
     }
 
     //OVERLOADED - designed for verifier contracts to call, so as to associate themselves with the proof
-    function submitProof(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32) {
+    function submitProof(uint256[] _proof, uint256[] _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32) {
 
         require(verifierContractRegister[_verifierContract].contractAddress != 0, "Verifier contract not yet registered");
         require(vkRegister[_vkId].vkId == _vkId, "vkId not yet registered");
@@ -149,7 +149,7 @@ contract Verifier_Registry {
     }
 
 
-    function submitProofAndVerify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32 proofId, bool result) {
+    function submitProofAndVerify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32 proofId, bool result) {
 
       require(vkRegister[_vkId].vkId == _vkId, "vkId not yet registered");
       require(verifierContractRegister[_verifierContract].contractAddress != 0, "Verifier contract not yet registered");
@@ -177,7 +177,7 @@ contract Verifier_Registry {
       Verifier_Interface verifierContract;
       verifierContract = Verifier_Interface(_verifierContract);
 
-      result = verifierContract.verify(_proof, _inputs, _vkId, proofId);
+      result = verifierContract.verifyFromRegistry(_proof, _inputs, _vkId);
 
       emit NewAttestation(proofId, _verifierContract, result);
 
@@ -238,7 +238,7 @@ contract Verifier_Registry {
 
     /*TODO - implement this
     */
-    function challengeAttestation(bytes32 _proofId, uint256[] _proof, uint64[] _inputs, address _verifierContract) public {}
+    //function challengeAttestation(bytes32 _proofId, uint256[] _proof, uint256[] _inputs, address _verifierContract) public {}
 
 
     //we put this vkId creation in the registry, so that people 'trust' its calculation.
@@ -250,7 +250,7 @@ contract Verifier_Registry {
     }
 
     //we put this vkId creation in the registry, so that people 'trust' its calculation.
-    function createNewProofId(uint256[] _proof, uint64[] _inputs) public pure returns (bytes32) {
+    function createNewProofId(uint256[] _proof, uint256[] _inputs) public pure returns (bytes32) {
 
         bytes32 newProofId = keccak256(abi.encodePacked(_proof, _inputs));
 

@@ -71,7 +71,7 @@ library Pairing_v0 {
     /// For example pairing([P1(), P1().negate()], [P2(), P2()]) should
     /// return true.
     function pairing(Points.G1Point[] p1, Points.G2Point[] p2) internal returns (bool) {
-        require(p1.length == p2.length, "EC pairing p1 != p2");
+        require(p1.length == p2.length, "EC pairing p1 length != p2 length");
         uint elements = p1.length;
         uint inputSize = elements * 6;
         uint[] memory input = new uint[](inputSize);

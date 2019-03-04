@@ -39,20 +39,20 @@ interface Verifier_Registry_Interface{
 
     function registerVk(uint256[] _vk, address[] _verifierContracts) external returns (bytes32);
 
-    function submitProof(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) external returns (bytes32);
+    function submitProof(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bytes32);
 
-    function submitProof(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, address _verifierContract) external returns (bytes32);
+    function submitProof(uint256[] _proof, uint256[] _inputs, bytes32 _vkId, address _verifierContract) external returns (bytes32);
 
-    function submitProofAndVerify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, address _verifierContract) external returns (bytes32);
+    function submitProofAndVerify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId, address _verifierContract) external returns (bytes32);
 
     function attestProof(bytes32 _proofId, bytes32 _vkId, bool _result) external;
 
     function attestProofs(bytes32[] _proofIds, bytes32[] _vkIds, bool[] _results) external;
 
-    function challengeAttestation(bytes32 _proofId, uint256[] _proof, uint64[] _inputs, address _verifierContract) external;
+    function challengeAttestation(bytes32 _proofId, uint256[] _proof, uint256[] _inputs, address _verifierContract) external;
 
     function createNewVkId(uint256[] _vk) external pure returns (bytes32);
 
-    function createNewProofId(uint256[] _proof, uint64[] _inputs) external pure returns (bytes32);
+    function createNewProofId(uint256[] _proof, uint256[] _inputs) external pure returns (bytes32);
 
 }

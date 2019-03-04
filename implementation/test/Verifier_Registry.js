@@ -92,7 +92,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
 
     //console.log("Reading vk from json file...")
-    const VERIFYING_KEY_PGHR13_v0 = "./test/PGHR13-vk.json"
+    const VERIFYING_KEY_PGHR13_v0 = "./test/jsons/PGHR13-vk.json"
     vk = await new Promise((resolve, reject) => {
       jsonfile.readFile(VERIFYING_KEY_PGHR13_v0, (err, data) => {
         //jsonfile doesn't natively support promises
@@ -114,7 +114,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
 
     //console.log("Reading proof object from json file...")
-    const PROOF_PGHR13_v0 = "./test/PGHR13-proof.json"
+    const PROOF_PGHR13_v0 = "./test/jsons/PGHR13-proof.json"
     proof = await new Promise((resolve, reject) => {
       jsonfile.readFile(PROOF_PGHR13_v0, (err, data) => {
         if (err) reject(err)
@@ -138,7 +138,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
     //console.log(proofId)
 
     //console.log("Reading vk from json file...")
-    const FALSE_VERIFYING_KEY_PGHR13_v0 = "./test/PGHR13-false-vk.json"
+    const FALSE_VERIFYING_KEY_PGHR13_v0 = "./test/jsons/PGHR13-false-vk.json"
     vk3 = await new Promise((resolve, reject) => {
       jsonfile.readFile(FALSE_VERIFYING_KEY_PGHR13_v0, (err, data) => {
         //jsonfile doesn't natively support promises
@@ -160,7 +160,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
 
     //console.log("Reading proof object from json file...")
-    const FALSE_PROOF_PGHR13_v0 = "./test/PGHR13-false-proof.json"
+    const FALSE_PROOF_PGHR13_v0 = "./test/jsons/PGHR13-false-proof.json"
     proof3 = await new Promise((resolve, reject) => {
       jsonfile.readFile(FALSE_PROOF_PGHR13_v0, (err, data) => {
         if (err) reject(err)
@@ -546,7 +546,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
           it('emits NewProofSubmitted event', async function () {
 
-            const { logs } = await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
+            const { logs } = await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
 
             //console.log(logs[0])
 
@@ -565,7 +565,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
           it("loads the proof's metadata into the proofRegister", async function () {
 
-            await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
+            await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
 
             let _proofId = await verifier_registry.getProofEntryProofId.call(proofId)
             let _vkIds = await verifier_registry.getProofEntryVkIds.call(proofId)
@@ -587,7 +587,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
           it("loads the proof's metadata into the vkRegister", async function () {
 
-            await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
+            await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
             let _proofId
             let _proofIds = await verifier_registry.getVkEntryProofIds.call(vkId)
 
@@ -602,7 +602,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
           it("loads the proof's metadata into the verifierContractRegister", async function () {
 
-            await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
+            await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32,address)'](proof2, inputs, vkId, address1, { from: proofSubmitter })
             let _proofId
             let _proofIds = await verifier_registry.getVerifierContractEntryProofIds.call(address1)
 
@@ -623,7 +623,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
             //address2 is not registered - address1 is
 
-            await assertRevert(verifier_registry.methods['submitProof(uint256[],uint64[],bytes32,address)'](proof2, inputs, vkId, address2, { from: proofSubmitter }))
+            await assertRevert(verifier_registry.methods['submitProof(uint256[],uint256[],bytes32,address)'](proof2, inputs, vkId, address2, { from: proofSubmitter }))
 
           })
 
@@ -635,7 +635,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
             //0x4c77da1f7262307c153866733748a1a8e45b812d14b7e62ce15ecd14237ac801 is not a registered vkId - (it differs from the 'correct' vkId by 1)
 
-            await assertRevert(verifier_registry.methods['submitProof(uint256[],uint64[],bytes32,address)'](proof2, inputs, '0x4c77da1f7262307c153866733748a1a8e45b812d14b7e62ce15ecd14237ac801', address1, { from: proofSubmitter }))
+            await assertRevert(verifier_registry.methods['submitProof(uint256[],uint256[],bytes32,address)'](proof2, inputs, '0x4c77da1f7262307c153866733748a1a8e45b812d14b7e62ce15ecd14237ac801', address1, { from: proofSubmitter }))
 
           })
 
@@ -672,7 +672,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
 
             //Truffle struggles with overloaded functions - this is how we do it:
-            const { logs } = await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
+            const { logs } = await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
 
             //console.log(logs[0])
 
@@ -691,7 +691,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
           it("loads the proof's metadata into the proofRegister", async function () {
 
-            await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
+            await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
 
             let _proofId = await verifier_registry.getProofEntryProofId.call(proofId)
             let _vkIds = await verifier_registry.getProofEntryVkIds.call(proofId)
@@ -709,7 +709,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
           it("loads the proof's metadata into the vkRegister", async function () {
 
-            await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
+            await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
             let _proofId
             let _proofIds = await verifier_registry.getVkEntryProofIds.call(vkId)
 
@@ -730,7 +730,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
 
             //0x4c77da1f7262307c153866733748a1a8e45b812d14b7e62ce15ecd14237ac801 is not a registered vkId - (it differs from the 'correct' vkId by 1)
 
-            await assertRevert(verifier_registry.methods['submitProof(uint256[],uint64[],bytes32)'](proof2, inputs, '0x4c77da1f7262307c153866733748a1a8e45b812d14b7e62ce15ecd14237ac801', { from: proofSubmitter }))
+            await assertRevert(verifier_registry.methods['submitProof(uint256[],uint256[],bytes32)'](proof2, inputs, '0x4c77da1f7262307c153866733748a1a8e45b812d14b7e62ce15ecd14237ac801', { from: proofSubmitter }))
 
           })
 
@@ -757,7 +757,7 @@ contract('Verifier_Registry', ([_, registryOwner, verifierOwner, vkSubmitter, pr
         describe('when the relevant proof has already been submitted against the vk', function () {
 
           beforeEach(async function () {
-            await verifier_registry.methods['submitProof(uint256[],uint64[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
+            await verifier_registry.methods['submitProof(uint256[],uint256[],bytes32)'](proof2, inputs, vkId, { from: proofSubmitter })
           })
 
           describe('when a verifier attests to the proof being TRUE', function () {

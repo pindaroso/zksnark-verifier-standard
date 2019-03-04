@@ -119,7 +119,7 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
 
 
     //console.log("Reading vk from json file...")
-    const VERIFYING_KEY_PGHR13_v0 = "./test/PGHR13-vk.json"
+    const VERIFYING_KEY_PGHR13_v0 = "./test/jsons/PGHR13-vk.json"
     vk = await new Promise((resolve, reject) => {
       jsonfile.readFile(VERIFYING_KEY_PGHR13_v0, (err, data) => {
         //jsonfile doesn't natively support promises
@@ -141,7 +141,7 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
 
 
     //console.log("Reading proof object from json file...")
-    const PROOF_PGHR13_v0 = "./test/PGHR13-proof.json"
+    const PROOF_PGHR13_v0 = "./test/jsons/PGHR13-proof.json"
     proof = await new Promise((resolve, reject) => {
       jsonfile.readFile(PROOF_PGHR13_v0, (err, data) => {
         if (err) reject(err)
@@ -168,7 +168,7 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
 
 
     //console.log("Reading vk from json file...")
-    const FALSE_VERIFYING_KEY_PGHR13_v0 = "./test/PGHR13-false-vk.json"
+    const FALSE_VERIFYING_KEY_PGHR13_v0 = "./test/jsons/PGHR13-false-vk.json"
     vk3 = await new Promise((resolve, reject) => {
       jsonfile.readFile(FALSE_VERIFYING_KEY_PGHR13_v0, (err, data) => {
         //jsonfile doesn't natively support promises
@@ -190,7 +190,7 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
 
 
     //console.log("Reading proof object from json file...")
-    const FALSE_PROOF_PGHR13_v0 = "./test/PGHR13-false-proof.json"
+    const FALSE_PROOF_PGHR13_v0 = "./test/jsons/PGHR13-false-proof.json"
     proof3 = await new Promise((resolve, reject) => {
       jsonfile.readFile(FALSE_PROOF_PGHR13_v0, (err, data) => {
         if (err) reject(err)
@@ -236,7 +236,7 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
   describe('ft mint() through coinShield', function () {
 
     beforeEach(async function () {
-      await pghr13_v0.loadVk(vk2, {from: vkSubmitter})
+      await verifier_registry.registerVk(vk2, [pghr13_v0.address], {from: vkSubmitter})
 
       await coin.mint(coinTransactor, '20000', {from: coinTransactor})
 
@@ -251,17 +251,20 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
 
         let _z = await coinShield.zs.call(z)
 
-        assert.equal(_z, z)
+        console.log("_z", _z)
+        console.log("z", z)
+
+        assert.equal(utils.hexToDec(_z), utils.hexToDec(z))
       })
     })
   })
 
   it('emits Mint event', async function () {
 
-    const { logs } = await pghr13_v0.loadVk(vk2, {from: vkSubmitter})
+    const { logs } = await verifier_registry.registerVk(vk2, [pghr13_v0.address], {from: vkSubmitter})
     //console.log(logs)
     assert.equal(logs.length, 1)
-    assert.equal(logs[0].event, 'NewVkLoaded')
+    assert.equal(logs[0].event, 'NewVkRegistered')
     assert.equal(logs[0].args._vkId, vkId)
   })
 })

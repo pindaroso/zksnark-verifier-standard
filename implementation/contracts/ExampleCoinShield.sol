@@ -9,19 +9,19 @@ Do not use this example in any production code!
 
 pragma solidity ^0.4.24;
 
-import "./Ownable.sol"; //Ownable functions allow the initializer to be re-initialised every time an upgrade happens
+import "./Ownable.sol"; //Ownable functions allow initializers to be re-initialised every time an upgrade happens
 import "./Coin.sol"; //ERC-20 contract
 import "./Verifier_Interface.sol";
 
 contract ExampleCoinShield is Ownable {
 
-    event Mint(uint indexed amount, bytes8 indexed zCoin);
+    event Mint(uint256 amount, bytes32 zCoin);
 
-    event VerifierChanged(address indexed newVerifierContract);
+    event VerifierChanged(address newVerifierContract);
 
 
     uint private balance = 0;
-    mapping(bytes8 => bytes8) public zs; //mapping holding the commitments.
+    mapping(bytes32 => bytes32) public zs; //mapping holding the commitments.
     Verifier_Interface public v; //the verification smart contract
     Coin public coin; //the Coin ERC20-like token contract
 
@@ -47,7 +47,7 @@ contract ExampleCoinShield is Ownable {
     /**
     The mint function accepts coin and creates the same amount as a commitment.
     */
-    function mint(uint64 amount, uint256[] _proof, uint64[] _inputs, bytes32 _vkId) public payable {
+    function mint(uint256 amount, uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public payable {
 
         bool result = v.verify(_proof, _inputs, _vkId);
 
@@ -57,7 +57,7 @@ contract ExampleCoinShield is Ownable {
         coin.transferFrom(msg.sender, address(this), amount);
         require(_inputs[0]==amount, "Payment amount mismatch"); //check we've been correctly paid
 
-        bytes8 z = bytes8(_inputs[1]);
+        bytes32 z = bytes32(_inputs[1]);
 
         zs[z] = z; //add the token
 

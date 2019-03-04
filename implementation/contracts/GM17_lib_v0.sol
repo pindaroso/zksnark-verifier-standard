@@ -15,35 +15,27 @@ pragma solidity ^0.4.24;
 import "./Points.sol";
 
 /**
- @title PGHR13_v0
- @dev Version 0 of verifying key struct format - for PGHR13 proofs.
+ @title GM17_v0
+ @dev Version 0 of verifying key struct format - for GM17 proofs.
  @notice Do not use this example in any production code!
  */
 
-library PGHR13_lib_v0 {
 
+library GM17_lib_v0 {
     using Points for *;
 
-    struct Vk_PGHR13_v0 {
-        Points.G2Point A;
-        Points.G1Point B;
-        Points.G2Point C;
-        Points.G2Point gamma;
-        Points.G1Point gammaBeta1;
-        Points.G2Point gammaBeta2;
-        Points.G2Point Z;
-        Points.G1Point[] IC;
+    struct Vk_GM17_v0 {
+        Points.G2Point H;
+        Points.G1Point Galpha;
+        Points.G2Point Hbeta;
+        Points.G1Point Ggamma;
+        Points.G2Point Hgamma;
+        Points.G1Point[] query;
     }
 
-    struct Proof_PGHR13_v0 {
+    struct Proof_GM17_v0 {
         Points.G1Point A;
-        Points.G1Point A_p;
         Points.G2Point B;
-        Points.G1Point B_p;
         Points.G1Point C;
-        Points.G1Point C_p;
-        Points.G1Point K;
-        Points.G1Point H;
     }
-
 }

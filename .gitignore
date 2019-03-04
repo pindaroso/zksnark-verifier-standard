@@ -1,0 +1,38 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# databases
+
+# dependencies
+node_modules
+node_modules/
+**/node_modules/
+
+
+# testing
+**/test.log
+
+# production
+
+# misc
+.DS_Store
+**/.DS_Store
+**/old/
+*comparison*
+**/issues/
+
+#build
+**/node_modules/
+**/package-lock.json
+**/~*
+**/tex/*
+
+#log
+**/logs/
+
+#chain data
+**/chaindata/
+**/lightchaindata/
+**/nodes/
+**/ethash/
+
+#large files
