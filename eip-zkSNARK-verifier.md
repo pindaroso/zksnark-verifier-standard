@@ -1,190 +1,125 @@
 ---
-eip: To be assigned <to be assigned>
-title: zk-SNARK verifier standard
-authors: Michael Connor<michael.connor@uk.ey.com>, Chaitanya Konda<chaitanya.konda@uk.ey.com>, Duncan Westland<duncan.westland@uk.ey.com>
-thanks: Paul Brody<paul.brody@ey.com>, Harry R
+eip: To be assigned
+title: zk-SNARK Verifier Standard
+author: Michael Connor <michael.connor@uk.ey.com>, Chaitanya Konda <chaitanya.konda@uk.ey.com>, Duncan Westland <duncan.westland@uk.ey.com>
 discussions-to: EY <https://github.com/EYBlockchain/zksnark-verifier-standard>
-status: WIP
 type: Standards Track
 category: ERC
+status: Draft
 created: 2018-09-14
 requires: 165, 196, 197
 ---
 
-<!--You can leave these HTML comments in your merged EIP and delete the visible duplicate text guides, they will not appear and may be helpful to refer to if you edit it again. This is the suggested template for new EIPs. Note that an EIP number will be assigned by an editor. When opening a pull request to submit your EIP, please use an abbreviated title in the filename, `eip-draft_title_abbrev.md`. The title should be 44 characters or less.-->
-## Contents
-[Simple Summary](#simple-summary)  
-[Abstract](#abstract)  
-[Motivation](#motivation)  
-[Specification](#specification)  
-[Rationale](#rationale)  
-[Backwards Compatibility](#backwards-compatibility)  
-[Test Cases](#test-cases)  
-[Implementations](#implementations)  
-[References](#references)  
-[Copyright](#copyright)  
-
 ## Simple Summary
 
-
-<!--"If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the EIP.-->
-A standard interface for 'Verifier' contracts which verify [zk-SNARKs](#4).
-
-<sub><sub>[Back to top](#contents)</sub></sub>
+A standard interface for "Verifier" contracts which verify zk-SNARKs.
 
 ## Abstract
-<!--A short (~200 word) description of the technical issue being addressed.-->
-The following 'Standard' allows for the implementation of a standard contract API for the verification of [zk-SNARKs](#4) ('zero knowledge - Succinct, Non-Interactive, ARguments of Knowledge', a.k.a. 'Proofs', 'Arguments' or 'Commitments').
+The following standard allows for the implementation of a standard contract API for the verification of zk-SNARKs ("Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge"), also known as "proofs", "arguments", or "commitments".
 
-This Standard provides basic functionality to load all necessary parameters for the verification of any zk-SNARK into a Verifier contract, so that it may ultimately return a `true` or `false` response; corresponding to whether the Proof has been verified or not verified.
-
-<sub><sub>[Back to top](#contents)</sub></sub>
+This standard provides basic functionality to load all necessary parameters for the verification of any zk-SNARK into a verifier contract, so that the proof may ultimately return a `true` or `false` response; corresponding to whether it has been verified or not verified.
 
 ## Motivation
-<!--The motivation is critical for EIPs that want to change the Ethereum protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the EIP solves. EIP submissions without sufficient motivation may be rejected outright.-->
 zk-SNARKs are a promising area of interest for the Ethereum community. Key applications of zk-SNARKs include:
 - Private transactions
 - Private computations
-- Ethereum scaling through proofs of 'bundled' transactions
+- Improved transaction scaling through proofs of "bundled" transactions
 
-A standard interface for verifying all [zk-SNARKs](#4) will allow applications to more easily implement private transactions, private contracts, and scaling solutions; and to extract and interpret the limited information which gets emitted during zk-SNARK verifications.
+A standard interface for verifying all zk-SNARKs will allow applications to more easily implement private transactions, private contracts, and scaling solutions; and to extract and interpret the limited information which gets emitted during zk-SNARK verifications.
 
 This standard was initially proposed by [EY](https://www.ey.com), and was inspired in particular by the requirements of businesses wishing to keep their agreements, transactions, and supply chain activities confidential - all whilst still benefiting from the commonly cited strengths of blockchains and smart contracts.
 
-<sub><sub>[Back to top](#contents)</sub></sub>
-
 ## Specification
-<!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).-->
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
+
+Common terminology is used in the specification below. The terminology is consistent with XXXSPECIFIC_REFERENCEXXX
+
+* Public Input Vector: often denoted as a vector 'x' in zk-SNARKs literature. An arithmetic circuit function is created as an abstraction of a particular type of zk-SNARK. The arithmetic circuit takes two parameters; the Public Input Vector, 'x', and a secret 'witness' vector, 'w'. This interface standardises functions which can load the Public Input Vector into this Verifier contract.
+* Verifying Key: A 'trusted setup' calculation creates both a public 'Proving Key' 'pk' and a public 'Verifying Key' 'vk' from an arithmetic circuit. This interface standardises functions which can load the Verifying Key into this Verifier contract.
+* Proof: A 'prover' who wants to 'prove' their standard generates a 'proof' from: the proving key; their secret witness vector 'w'; and its corresponding Public Input Vector 'x.'
+
+**Every ERC-XXXX compliant verifier contract must implement the `ERCXXXX` and `ERC165` interfaces** (subject to "caveats" below):
 
 
 ```solidity
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
-
-/// @title EIP-XXXX Token Commitment Standard
+/// @title EIP-XXXX zk-SNARK Verifier Standard
 /// @dev See https://github.com/EYBlockchain/zksnark-verifier-standard
-///  Note: the ERC-165 identifier for this interface is 0xXXXXXXXXX.
+///  Note: the ERC-165 identifier for this interface is 0xXXXXXXXX.
+interface EIPXXXX /* is ERC165 */ {
+    // EVENTS //////////////////////////////////////////////////////////////////
 
-interface EIP-XXXX /* is ERC165 */ {
-
-/// EVENTS
-
-
-  /// Verified
-
-    /// @dev This MUST emit once, and once only, every time a Proof is passed
-    ///  to this Verifier contract which evaluates as true.
-    /// @param {bytes32} _proofId
-    /// @param {bytes32} _vkId
-
-    event Verified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
-  /// NotVerified
+    /// @dev This MUST emit once, and once only, every time a proof is passed
+    ///  to this verifier contract which evaluates as true.
+    /// @param proofId A unique identifier for a passed proof
+    /// @param verifyingKeyId An identifier that represents a stored verifying key
+    event Verified(bytes32 indexed proofId, bytes32 indexed verifyingKeyId);
 
     /// @dev This MUST emit once, and once only, every time a Proof is passed
     ///  to this Verifier contract which evaluates as false.
-    /// @param {bytes32} _proofId
-    /// @param {bytes32} _vkId
+    /// @param proofId A unique identifier for a failed proof
+    /// @param verifyingKeyId An identifier that represents a stored verifying key
+    event NotVerified(bytes32 indexed proofId, bytes32 indexed verifyingKeyId);
 
-    event NotVerified(bytes32 indexed _proofId, bytes32 indexed _vkId);
+    /// @dev This MUST emit every time a verifying key is loaded through this contract.
+    /// @param verifyingKeyId
+    event NewVkLoaded(bytes32 indexed verifyingKeyId);
 
-  /// NotVerified
+    // FUNCTIONS ///////////////////////////////////////////////////////////////
 
-    /// @dev This MUST emit every time a Verifying Key is loaded through this contract.
-    /// @param {bytes32} _vkId
-
-    event NewVkLoaded(bytes32 indexed _vkId);
-
-
-
-/// FUNCTIONS
-
-/// Notation:
-/// - Public Input Vector: often denoted as a vector 'x' in zk-SNARKs
-///    literature. An arithmetic circuit function is created as an abstraction
-///    of a particular type of zk-SNARK.
-///    The arithmetic circuit takes two parameters; the Public Input Vector,
-///    'x', and a secret 'witness' vector, 'w'.
-///    This interface standardises functions which can load the Public Input
-///    Vector into this Verifier contract.
-/// - Verifying Key: A 'trusted setup' calculation creates both a public
-///    'Proving Key' 'pk' and a public 'Verifying Key' 'vk' from an arithmetic
-///    circuit.
-///    This interface standardises functions which can load the Verifying Key
-///    into this Verifier contract.
-/// - Proof: A 'prover' who wants to 'prove' their standard generates a
-///    'proof' from: the proving key; their secret witness vector 'w'; and its
-///    corresponding Public Input Vector 'x.'
-
-
-  /// loadVk
-
-    /// @notice Loads the components which make up the verifying key.
-    ///  These parameters don't have an immediately intuitive explanation, and
-    ///  their derivation is outside the scope of this EIP-XXXX.
-    /// @param {uint256[]} _vk The Verifying Key for an arithmetic circuit.
+    /// @notice Loads a pre-compiled circuit which makes up the verifying key.
+    ///  The derivation of verifying keys is not specified in this interface.
+    /// @param verifyingKey The Verifying Key for an arithmetic circuit.
     ///  An intentionally dynamic array, owing to the varying and constantly
     ///  changing notations which are being developed by mathematicians for
     ///  representing a zk-SNARK. Currently we avoid multi-dimensional arrays
     ///  and structs when passing and returning arguments, due to current
     ///  limitations in the EVM.
+    function loadVk(uint256[] calldata verifyingKey) external;
 
-    function loadVk(uint256[] _vk) public {}
-
-
-  /// verify
-
-    /// @notice Checks the arguments of the Proof, through elliptic curve
+    /// @notice Checks the arguments of Proof, through elliptic curve
     ///  pairing functions.
     /// @dev
-    ///  MUST return `true` if the Proof passes all checks (i.e. if the Proof is
+    ///  MUST return `true` if Proof passes all checks (i.e. the Proof is
     ///  valid). MUST emit the Verified event in this case.
     ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
     ///  Proof is invalid). MUST emit the NotVerified event in this case.
-    /// @param {uint256[]} _proof A zk-SNARK.
-    /// @param {uint256[]} _inputs Public inputs which accompany the _proof.
-    /// @param {uint256} _vkId A unique identifier (known to this verifier
-    ///  contract) for the Verifying Key to which the _proof corresponds.
-    /// @return {bool} The result of the verification calculation.
+    /// @param proof A zk-SNARK.
+    /// @param inputs Public inputs which accompany Proof.
+    /// @param verifyingKeyId A unique identifier (known to this verifier
+    ///  contract) for the Verifying Key to which Proof corresponds.
+    /// @return result The result of the verification calculation. True
+    ///  if Proof is valid; false otherwise.
+    function verify(uint256[] calldata proof, uint64[] calldata inputs, bytes32 verifyingKeyId) external returns (bool result);
 
-    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) public returns (bool) {}
-
-
-  /// verify (overloaded)
-
-    /// @notice Checks the arguments of the Proof, through elliptic curve
+    /// @notice Checks the arguments of Proof, through elliptic curve
     ///  pairing functions.
     /// @dev
-    ///  MUST return `true` if the Proof passes all checks (i.e. if the Proof is
+    ///  MUST return `true` if Proof passes all checks (i.e. the Proof is
     ///  valid). MUST emit the Verified event in this case.
     ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
     ///  Proof is invalid). MUST emit the NotVerified event in this case.
-    /// @param {uint256[]} _proof A zk-SNARK.
-    /// @param {uint256[]} _inputs Public inputs which accompany the _proof.
-    /// @param {uint256} _vkId A unique identifier (known to this verifier
-    ///  contract) for the Verifying Key to which the _proof corresponds.
-    /// @param {uint256} _proofId A unique identifier (known to this verifier
-    ///  contract) for the _proof.
-    /// @return {bool} The result of the verification calculation.
-
-    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, bytes32 _proofId) public returns (bool) {}
-
-
+    /// @param proof A zk-SNARK.
+    /// @param inputs Public inputs which accompany Proof.
+    /// @param verifyingKeyId A unique identifier (known to this verifier
+    ///  contract) for the Verifying Key to which Proof corresponds.
+    /// @param proofId A unique identifier (known to this verifier
+    ///  contract) for Proof.
+    /// @return result The result of the verification calculation. True
+    ///  if Proof is valid; false otherwise.
+    function verify(uint256[] calldata proof, uint64[] calldata inputs, bytes32 verifyingKeyId, bytes32 proofId) external returns (bool result);
 }
 ```
 ### Interface
 ``` solidity
 interface ERC165 {
-
-  /// supportsInterface
-
     /// @notice Query if a contract implements an interface
     /// @param interfaceID The interface identifier, as specified in ERC-165
     /// @dev Interface identification is specified in ERC-165. This function
     ///  uses less than 30,000 gas.
     /// @return `true` if the contract implements `interfaceID` and
     ///  `interfaceID` is not 0xffffffff, `false` otherwise
-
     function supportsInterface(bytes4 interfaceID) external view returns (bool);
 }
 ```
@@ -216,23 +151,20 @@ $$\pi = P(pk, x, w)$$
 
 Note: A single circuit $C$ could have very many distinct satisfying arguments, $\pi_i$, and so each (`_proof`, `_input`) pair requires its own unique `_proofId` (the set of valid proofs maps surjectively onto the set of satisfiable circuits). Uniqueness of `_proofId`'s is important.
 
-The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form $\pi$) through some verification function $V$.
+The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form $\pi​$) through some verification function $V​$.
 
 $$V(vk, x, \pi)=\begin{cases}
     1, & \text{if $\exists w\ s.t.\ C(x,w)=1$}.\\
     0, & \text{otherwise}.
-  \end{cases}$$
-The `verify()` function of this specification serves the purpose of $V$; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
+  \end{cases}​$$
+The `verify()` function of this specification serves the purpose of $V​$; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
 
 
-#### Justification of 'loadVk' function:
+#### Justification of `loadVk` function:
 There are several 'objects' which need to be passed into the Verifier contract. We recommend to load only the verifying keys into persistent storage. A proof and its corresponding inputs are 'one-time' 'objects' and so should ideally not be stored, to save on gas costs.
-
-<sub><sub>[Back to top](#contents)</sub></sub>
 
 
 ## Backwards Compatibility
-<!--All EIPs that introduce backwards incompatibilities must include a section describing these incompatibilities and their severity. The EIP must explain how the author proposes to deal with these incompatibilities. EIP submissions without a sufficient backwards compatibility treatise may be rejected outright.-->
 - At the time this EIP was first proposed, there was only one known and working set of Verifier contracts for zk-SNARKs on the Ethereum mainnet - deployed by [EY](https://www.ey.com).
 [EY's](https://www.ey.com) initial [implementation](#implementations) does not exactly adhere to the draft specification of this EIP, but EY have agreed that there is no need to provide backwards compatibility with their initial implementation.
 
@@ -240,22 +172,16 @@ There are several 'objects' which need to be passed into the Verifier contract. 
 
 - Existing zk-SNARK compilers such as [ZoKrates](#6.3), which produce 'Verifier.sol' contracts, do not currently produce Verifier contracts which adhere to this EIP specification.
 
-<sub><sub>[Back to top](#contents)</sub></sub>
-
 
 ## Test Cases
 <!--Test cases for an implementation are mandatory for EIPs that are affecting consensus changes. Other EIPs can choose to include links to test cases if applicable.-->
 
-Truffle tests of example implementations are included in this Repo.
-
-<sub><sub>[Back to top](#contents)</sub></sub>
+Truffle tests of example implementations are included in the test case repository.
 
 
 ## Implementations
 <!--The implementations must be completed before any EIP is given status "Final", but it need not be completed before the EIP is accepted. While there is merit to the approach of reaching consensus on the specification and rationale before writing code, the principle of "rough consensus and running code" is still useful when it comes to resolving many discussions of API details.-->
 Detailed example implementations and Truffle tests of these example implementations are included in this Repo.
-
-<sub><sub>[Back to top](#contents)</sub></sub>
 
 
 ## References
@@ -302,14 +228,9 @@ Detailed example implementations and Truffle tests of these example implementati
   1. <a id="7.2"></a> Bulletproofs - https://eprint.iacr.org/2017/1066.pdf
   1. <a id="7.3"></a> Range Proofs - https://www.cosic.esat.kuleuven.be/ecrypt/provpriv2012/abstracts/canard.pdf
   1. <a id="7.4"></a> Secure Enclaves - https://developer.apple.com/documentation/security/certificate_key_and_trust_services/keys/storing_keys_in_the_secure_enclave
-  https://software.intel.com/en-us/sgx
-
-
-<sub><sub>[Back to top](#contents)</sub></sub>
+    https://software.intel.com/en-us/sgx
 
 
 ## Copyright
 
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
-
-<sub><sub>[Back to top](#contents)</sub></sub>
