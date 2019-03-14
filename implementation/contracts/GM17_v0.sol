@@ -29,7 +29,7 @@ Harry R
 
 pragma solidity ^0.4.24;
 
-import "./Ownable.sol"; //Ownable functions allow initializers to be re-initialised every time an upgrade happens
+import "./Ownable.sol";
 import "./GM17_lib_v0.sol";
 import "./Pairing_v1.sol";
 import "./Verifier_Registry_Interface.sol";
@@ -40,20 +40,11 @@ contract GM17_v0 is Ownable {
   using GM17_lib_v0 for GM17_lib_v0.Proof_GM17_v0;
   using Pairing_v1 for *;
 
-  event Verified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
-  event NotVerified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
-
-  bool internal _initialized;
   Verifier_Registry_Interface public R; //R for 'Registry'
-  address[] public _this;
+  GM17_lib_v0.Vk_GM17_v0 vk;
 
-
-  //constructor will be used in initial tests until proxy gets finalised.
   constructor(address _registry) public {
       registerMe(_registry);
-      _this.push(address(this));
   }
 
   modifier onlyRegistry() {
@@ -61,35 +52,23 @@ contract GM17_v0 is Ownable {
     _;
   }
 
-
   function registerMe(address _registry) internal {
       R = Verifier_Registry_Interface(_registry);
       require(R.registerVerifierContract(address(this)), "Registration of this Verifier contract has failed");
   }
 
-
-//DOESN'T WORK IN TRUFFLE TESTS - BUT IT SHOULD.
   function verify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (bool result) {
 
       bytes32 proofId;
 
       proofId = R.submitProof(_proof, _inputs, _vkId, address(this));
-      //R.attestProof(proofId, _vkId, true);
 
       if (verificationCalculation(_proof, _inputs, _vkId) == 0) {
-          emit Verified(proofId, _vkId);
-          //R.attestProof(proofId, _vkId, true); //this call after the elliptic curve calculations is what breaks the test. If we replace the elliptic curve check with just 'true', then this calls correctly - so it could be a gas limit thing.
-
           result = true;
-
       } else {
-          emit NotVerified(proofId, _vkId);
-          //R.attestProof(proofId, _vkId, false); //this call after the elliptic curve calculations is what breaks the test. If we replace the elliptic curve check with just 'true', then this calls correctly - so it could be a gas limit thing.
-
           result = false;
-
       }
-      //R.attestProof(proofId, _vkId, result);
+      R.attestProof(proofId, _vkId, result);
 
       return result;
   }
@@ -111,7 +90,6 @@ contract GM17_v0 is Ownable {
       GM17_lib_v0.Proof_GM17_v0 memory proof;
       Points.G1Point memory vk_dot_inputs;
       uint256[] memory _vk;
-      GM17_lib_v0.Vk_GM17_v0 storage vk;
 
       vk_dot_inputs = Points.G1Point(0, 0); //initialise
 
@@ -149,7 +127,6 @@ contract GM17_v0 is Ownable {
       if (!Pairing_v1.pairingProd4(vk.Galpha, vk.Hbeta, vk_dot_inputs, vk.Hgamma, proof.C, vk.H, Pairing_v1.negate(Pairing_v1.addition(proof.A, vk.Galpha)), Pairing_v1.addition2(proof.B, vk.Hbeta))) {
           return 1;
       }
-
 
       /**
        * e(A, H^{gamma}) = e(G^{gamma}, B)

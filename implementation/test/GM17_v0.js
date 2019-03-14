@@ -170,46 +170,23 @@ contract('GM17_v0', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubmitt
       //let _registry = await gm17_v0.R.call()
       //console.log(_registry)
 
-      let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 1000000000000})
+      let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 6500000})
 
       assert.equal(_result, true)
 
     })
-/*
-    it("emits a Verified event when a TRUE proof_gm is submitted", async function () {
 
-      const { logs } = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'](proof_gm_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 1000000000000})
-
-      assert.equal(logs.length, 1)
-      assert.equal(logs[0].event, 'Verified')
-      assert.equal(logs[0].args._proofId, proofId_gm)
-      assert.equal(logs[0].args._vkId, vkId_gm)
-
-    })
-*/
     it("evaluates a FALSE proof_gm as false", async function () {
 
-      let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_false_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 1000000000000})
+      let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_false_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 6500000})
 
       assert.equal(_result, false)
 
     })
-/*
-    it("emits a NotVerified event when a FALSE proof_gm is submitted", async function () {
-
-      const { logs } = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'](proof_gm_false_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 1000000000000})
-
-      assert.equal(logs.length, 1)
-      assert.equal(logs[0].event, 'NotVerified')
-      assert.equal(logs[0].args._proofId, proofId_gm_false)
-      assert.equal(logs[0].args._vkId, vkId_gm)
-
-    })
-*/
   })
 
 
-  describe('verify() (NOT-OVERLOADED - tries to update the registry - not to be called through the registry (truffle test struggles with this one))', function () {
+  describe('verify() (tries to update the registry)', function () {
 
     beforeEach(async function () {
       await verifier_registry.registerVk(vk_gm_uint, [gm17_v0.address], {from: vkSubmitter})
@@ -225,42 +202,18 @@ contract('GM17_v0', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubmitt
       //let _registry = await gm17_v0.R.call()
       //console.log(_registry)
 
-      let _result = await gm17_v0.methods['verify(uint256[],uint256[],bytes32)'].call(proof_gm_uint, inputs, vkId_gm, {from: proofSubmitter, gas: 1000000000000})
+      let _result = await gm17_v0.methods['verify(uint256[],uint256[],bytes32)'].call(proof_gm_uint, inputs, vkId_gm, {from: proofSubmitter, gas: 6500000})
 
       assert.equal(_result, true)
 
     })
-/*
-    it("emits a Verified event when a TRUE proof_gm is submitted", async function () {
-
-      const { logs } = await gm17_v0.methods['verify(uint256[],uint256[],bytes32)'](proof_gm_uint, inputs, vkId_gm, {from: proofSubmitter, gas: 1000000000000})
-
-      assert.equal(logs.length, 1)
-      assert.equal(logs[0].event, 'Verified')
-      assert.equal(logs[0].args._proofId, proofId_gm)
-      assert.equal(logs[0].args._vkId, vkId_gm)
-
-    })
-*/
     it("evaluates a FALSE proof_gm as false", async function () {
 
-      let _result = await gm17_v0.methods['verify(uint256[],uint256[],bytes32)'].call(proof_gm_false_uint, inputs, vkId_gm, {from: proofSubmitter, gas: 1000000000000})
+      let _result = await gm17_v0.methods['verify(uint256[],uint256[],bytes32)'].call(proof_gm_false_uint, inputs, vkId_gm, {from: proofSubmitter, gas: 6500000})
 
       assert.equal(_result, false)
 
     })
-/*
-    it("emits a NotVerified event when a FALSE proof_gm is submitted", async function () {
-
-      const { logs } = await gm17_v0.methods['verify(uint256[],uint256[],bytes32)'](proof_gm_false_uint, inputs, vkId_gm, {from: proofSubmitter, gas: 1000000000000})
-
-      assert.equal(logs.length, 1)
-      assert.equal(logs[0].event, 'NotVerified')
-      assert.equal(logs[0].args._proofId, proofId_gm_false)
-      assert.equal(logs[0].args._vkId, vkId_gm)
-
-    })
-*/
   })
 
 

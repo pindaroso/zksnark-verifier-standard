@@ -153,35 +153,32 @@ interface ERC165 {
 
 ### Taxonomy
 
-$C$ - A satisfiable arithmetic circuit abstraction of a function.
+<img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> - A satisfiable arithmetic circuit abstraction of a function.
 
-$\lambda$ - A random number, generated at the 'setup' phase - commonly referred to as 'toxic waste', because knowledge of $\lambda$ would allow an untrustworthy party to create 'false' proofs which would verify as 'true'. $\lambda$ must be destroyed.
+<img src="/tex/fd8be73b54f5436a5cd2e73ba9b6bfa9.svg?invert_in_darkmode&sanitize=true" align=middle width=9.58908224999999pt height=22.831056599999986pt/> - A random number, generated at the 'setup' phase - commonly referred to as 'toxic waste', because knowledge of <img src="/tex/fd8be73b54f5436a5cd2e73ba9b6bfa9.svg?invert_in_darkmode&sanitize=true" align=middle width=9.58908224999999pt height=22.831056599999986pt/> would allow an untrustworthy party to create 'false' proofs which would verify as 'true'. <img src="/tex/fd8be73b54f5436a5cd2e73ba9b6bfa9.svg?invert_in_darkmode&sanitize=true" align=middle width=9.58908224999999pt height=22.831056599999986pt/> must be destroyed.
 
-$pk$ or `_pk` - The proving key for a particular circuit $C$.
+<img src="/tex/8a9430b0117639aedc7cd4ff059a5a53.svg?invert_in_darkmode&sanitize=true" align=middle width=17.345935199999992pt height=22.831056599999986pt/> or `_pk` - The proving key for a particular circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/>.
 
-$vk$ or `_vk` - The verifying key for a particular circuit $C$.
+<img src="/tex/651584b730aa8f52c633fb0aab6eecf5.svg?invert_in_darkmode&sanitize=true" align=middle width=17.63321009999999pt height=22.831056599999986pt/> or `_vk` - The verifying key for a particular circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/>.
 
-Both $pk$ and $vk$ are generated as a pair by some function $G$:
-$$(pk, vk) = G(\lambda, C)$$
+Both <img src="/tex/8a9430b0117639aedc7cd4ff059a5a53.svg?invert_in_darkmode&sanitize=true" align=middle width=17.345935199999992pt height=22.831056599999986pt/> and <img src="/tex/651584b730aa8f52c633fb0aab6eecf5.svg?invert_in_darkmode&sanitize=true" align=middle width=17.63321009999999pt height=22.831056599999986pt/> are generated as a pair by some function <img src="/tex/5201385589993766eea584cd3aa6fa13.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/>:
+<p align="center"><img src="/tex/2c018860960f8498c409fae9e0d68294.svg?invert_in_darkmode&sanitize=true" align=middle width=132.5177601pt height=16.438356pt/></p>
 
-Note: $C$ can be represented unambiguously by either of `pk` or `vk`. In zk-SNARK constructions, `vk` is much smaller in size than `pk`, so as to enable succinct verification on-chain. Hence, `vk` is the representative of $C$ that we 'load' into the Verifier contract (through `loadVk`) and hence it is the representative of $C$ that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `vkId`, where `vkId` serves as a more succinct mapping to `vk`.
+Note: <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> can be represented unambiguously by either of `pk` or `vk`. In zk-SNARK constructions, `vk` is much smaller in size than `pk`, so as to enable succinct verification on-chain. Hence, `vk` is the representative of <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> that we 'load' into the Verifier contract (through `loadVk`) and hence it is the representative of <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `vkId`, where `vkId` serves as a more succinct mapping to `vk`.
 
-$w$ - A 'private witness' string. A private argument to the circuit $C$ known only to the prover, which, when combined with the Public Input Vector argument $x$, comprises an argument of knowledge which satisfies the circuit $C$.
+<img src="/tex/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode&sanitize=true" align=middle width=12.210846449999991pt height=14.15524440000002pt/> - A 'private witness' string. A private argument to the circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> known only to the prover, which, when combined with the Public Input Vector argument <img src="/tex/332cc365a4987aacce0ead01b8bdcc0b.svg?invert_in_darkmode&sanitize=true" align=middle width=9.39498779999999pt height=14.15524440000002pt/>, comprises an argument of knowledge which satisfies the circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/>.
 
-$x$ or `_input` - A 'Public Input Vector'. A public argument to the circuit $C$ which, when combined with the private witness string $w$, comprises an argument of knowledge which satisfies the circuit $C$.
+<img src="/tex/332cc365a4987aacce0ead01b8bdcc0b.svg?invert_in_darkmode&sanitize=true" align=middle width=9.39498779999999pt height=14.15524440000002pt/> or `_input` - A 'Public Input Vector'. A public argument to the circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> which, when combined with the private witness string <img src="/tex/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode&sanitize=true" align=middle width=12.210846449999991pt height=14.15524440000002pt/>, comprises an argument of knowledge which satisfies the circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/>.
 
-$\pi$ or `_proof` - an encoded vector of values which represents the 'prover's' 'argument of knowledge' of values $w$ and $x$ which satisfy the circuit $C$.
-$$\pi = P(pk, x, w)$$
+<img src="/tex/f30fdded685c83b0e7b446aa9c9aa120.svg?invert_in_darkmode&sanitize=true" align=middle width=9.96010619999999pt height=14.15524440000002pt/> or `_proof` - an encoded vector of values which represents the 'prover's' 'argument of knowledge' of values <img src="/tex/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode&sanitize=true" align=middle width=12.210846449999991pt height=14.15524440000002pt/> and <img src="/tex/332cc365a4987aacce0ead01b8bdcc0b.svg?invert_in_darkmode&sanitize=true" align=middle width=9.39498779999999pt height=14.15524440000002pt/> which satisfy the circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/>.
+<p align="center"><img src="/tex/353c64b03539868d88cff0760e94d277.svg?invert_in_darkmode&sanitize=true" align=middle width=111.06345359999999pt height=16.438356pt/></p>
 
-Note: A single circuit $C$ could have very many distinct satisfying arguments, $\pi_i$, and so each (`_proof`, `_input`) pair requires its own unique `_proofId` (the set of valid proofs maps surjectively onto the set of satisfiable circuits). Uniqueness of `_proofId`'s is important.
+Note: A single circuit <img src="/tex/9b325b9e31e85137d1de765f43c0f8bc.svg?invert_in_darkmode&sanitize=true" align=middle width=12.92464304999999pt height=22.465723500000017pt/> could have very many distinct satisfying arguments, <img src="/tex/fb7276301b30b0ad84054b52f14d0628.svg?invert_in_darkmode&sanitize=true" align=middle width=14.021211599999992pt height=14.15524440000002pt/>, and so each (`_proof`, `_input`) pair requires its own unique `_proofId` (the set of valid proofs maps surjectively onto the set of satisfiable circuits). Uniqueness of `_proofId`'s is important.
 
-The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form $\pi$) through some verification function $V$.
+The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form <img src="/tex/f30fdded685c83b0e7b446aa9c9aa120.svg?invert_in_darkmode&sanitize=true" align=middle width=9.96010619999999pt height=14.15524440000002pt/>) through some verification function <img src="/tex/a9a3a4a202d80326bda413b5562d5cd1.svg?invert_in_darkmode&sanitize=true" align=middle width=13.242037049999992pt height=22.465723500000017pt/>.
 
-$$V(vk, x, \pi)=\begin{cases}
-    1, & \text{if $\exists w\ s.t.\ C(x,w)=1$}.\\
-    0, & \text{otherwise}.
-  \end{cases}$$
-The `verify()` function of this specification serves the purpose of $V$; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
+<p align="center"><img src="/tex/2e2bf096ff8118dd9d329844d0194396.svg?invert_in_darkmode&sanitize=true" align=middle width=301.4804991pt height=49.315569599999996pt/></p>
+The `verify()` function of this specification serves the purpose of <img src="/tex/a9a3a4a202d80326bda413b5562d5cd1.svg?invert_in_darkmode&sanitize=true" align=middle width=13.242037049999992pt height=22.465723500000017pt/>; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
 
 
 <sub><sub>[Back to top](#contents)</sub></sub>

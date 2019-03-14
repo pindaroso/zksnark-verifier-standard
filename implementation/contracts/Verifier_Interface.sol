@@ -23,10 +23,6 @@ pragma solidity ^0.4.24;
 
 interface Verifier_Interface {
 
-  event Verified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
-  event NotVerified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
   function verify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bool);
 
   function verifyFromRegistry(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bool);

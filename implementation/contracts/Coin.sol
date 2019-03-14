@@ -26,7 +26,7 @@ contract Coin is ERC20Interface {
   mapping (address => mapping (address => uint)) private timeLock;
 
 
-  constructor() {
+  constructor() public {
     symbol = "OPS";
     name = "EY OpsCoin";
     totalSupply = 1000000;
