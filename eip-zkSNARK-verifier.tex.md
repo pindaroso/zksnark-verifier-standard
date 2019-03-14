@@ -69,31 +69,7 @@ interface EIP-XXXX /* is ERC165 */ {
 
 /// EVENTS
 
-
-  /// Verified
-
-    /// @dev This MUST emit once, and once only, every time a Proof is passed
-    ///  to this Verifier contract which evaluates as true.
-    /// @param {bytes32} _proofId
-    /// @param {bytes32} _vkId
-
-    event Verified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
-  /// NotVerified
-
-    /// @dev This MUST emit once, and once only, every time a Proof is passed
-    ///  to this Verifier contract which evaluates as false.
-    /// @param {bytes32} _proofId
-    /// @param {bytes32} _vkId
-
-    event NotVerified(bytes32 indexed _proofId, bytes32 indexed _vkId);
-
-  /// NotVerified
-
-    /// @dev This MUST emit every time a Verifying Key is loaded through this contract.
-    /// @param {bytes32} _vkId
-
-    event NewVkLoaded(bytes32 indexed _vkId);
+  /// No events are specified.
 
 
 
@@ -117,21 +93,6 @@ interface EIP-XXXX /* is ERC165 */ {
 ///    corresponding Public Input Vector 'x.'
 
 
-  /// loadVk
-
-    /// @notice Loads the components which make up the verifying key.
-    ///  These parameters don't have an immediately intuitive explanation, and
-    ///  their derivation is outside the scope of this EIP-XXXX.
-    /// @param {uint256[]} _vk The Verifying Key for an arithmetic circuit.
-    ///  An intentionally dynamic array, owing to the varying and constantly
-    ///  changing notations which are being developed by mathematicians for
-    ///  representing a zk-SNARK. Currently we avoid multi-dimensional arrays
-    ///  and structs when passing and returning arguments, due to current
-    ///  limitations in the EVM.
-
-    function loadVk(uint256[] _vk) public {}
-
-
   /// verify
 
     /// @notice Checks the arguments of the Proof, through elliptic curve
@@ -147,10 +108,10 @@ interface EIP-XXXX /* is ERC165 */ {
     ///  contract) for the Verifying Key to which the _proof corresponds.
     /// @return {bool} The result of the verification calculation.
 
-    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) public returns (bool) {}
+    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) external returns (bool) {}
 
 
-  /// verify (overloaded)
+  /// verifyFromRegistry
 
     /// @notice Checks the arguments of the Proof, through elliptic curve
     ///  pairing functions.
@@ -163,11 +124,9 @@ interface EIP-XXXX /* is ERC165 */ {
     /// @param {uint256[]} _inputs Public inputs which accompany the _proof.
     /// @param {uint256} _vkId A unique identifier (known to this verifier
     ///  contract) for the Verifying Key to which the _proof corresponds.
-    /// @param {uint256} _proofId A unique identifier (known to this verifier
-    ///  contract) for the _proof.
     /// @return {bool} The result of the verification calculation.
 
-    function verify(uint256[] _proof, uint64[] _inputs, bytes32 _vkId, bytes32 _proofId) public returns (bool) {}
+    function verifyFromRegistry(uint256[] _proof, uint64[] _inputs, bytes32 _vkId) external returns (bool) {}
 
 
 }
@@ -224,9 +183,6 @@ $$V(vk, x, \pi)=\begin{cases}
   \end{cases}$$
 The `verify()` function of this specification serves the purpose of $V$; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
 
-
-#### Justification of 'loadVk' function:
-There are several 'objects' which need to be passed into the Verifier contract. We recommend to load only the verifying keys into persistent storage. A proof and its corresponding inputs are 'one-time' 'objects' and so should ideally not be stored, to save on gas costs.
 
 <sub><sub>[Back to top](#contents)</sub></sub>
 

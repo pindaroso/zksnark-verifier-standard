@@ -12,9 +12,6 @@ const leftPad = require('left-pad');
 
 
 
-//const Ownable = artifacts.require('Ownable')
-//const GM17_lib_v0 = artifacts.require('GM17_lib_v0')
-//const GM17_v0 = artifacts.require('GM17_v0')
 
 const Verifier_Register_Library = artifacts.require('Verifier_Register_Library')
 const Verifier_Registry = artifacts.require('Verifier_Registry')
@@ -244,27 +241,28 @@ contract('CoinShield', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubm
     })
 
     describe('when a VALID mint proof is submitted', function () {
-
+/*
       it("mints a coin", async function () {
 
-        await coinShield.mint('10000' , proof2, inputs, vkId, {from: coinTransactor})
+        await coinShield.mint('10000', proof2, inputs, vkId, {from: coinTransactor})
 
-        let _z = await coinShield.zs.call(z)
+        let _z = await coinShield.zs(z)
 
         console.log("_z", _z)
         console.log("z", z)
 
         assert.equal(utils.hexToDec(_z), utils.hexToDec(z))
       })
+*/
+
+      it('emits Mint event', async function () {
+
+        const { logs } = await coinShield.mint('10000', proof2, inputs, vkId, {from: coinTransactor})
+        //console.log(logs)
+        assert.equal(logs.length, 1)
+        assert.equal(logs[0].event, 'Mint')
+        assert.equal(logs[0].args.amount, '10000')
+      })
     })
-  })
-
-  it('emits Mint event', async function () {
-
-    const { logs } = await verifier_registry.registerVk(vk2, [pghr13_v0.address], {from: vkSubmitter})
-    //console.log(logs)
-    assert.equal(logs.length, 1)
-    assert.equal(logs[0].event, 'NewVkRegistered')
-    assert.equal(logs[0].args._vkId, vkId)
   })
 })
