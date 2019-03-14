@@ -25,5 +25,9 @@
     "url": "git+https://github.com/EYBlockchain/ZKPStandards.git"
   },
   "author": "MichaelConnorOfficial",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "ganache-cli": "^6.4.1",
+    "solc": "^0.4.24"
+  }
 }
