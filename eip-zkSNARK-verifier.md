@@ -60,9 +60,9 @@ interface EIPXXXX /* is ERC165 */ {
     ///  pairing functions.
     /// @dev
     ///  MUST return `true` if Proof passes all checks (i.e. the Proof is
-    ///  valid). MUST emit the Verified event in this case.
+    ///  valid).
     ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
-    ///  Proof is invalid). MUST emit the NotVerified event in this case.
+    ///  Proof is invalid).
     /// @param proof A zk-SNARK.
     /// @param inputs Public inputs which accompany Proof.
     /// @param verifyingKeyId A unique identifier (known to this verifier
@@ -75,9 +75,9 @@ interface EIPXXXX /* is ERC165 */ {
     ///  pairing functions.
     /// @dev
     ///  MUST return `true` if Proof passes all checks (i.e. the Proof is
-    ///  valid). MUST emit the Verified event in this case.
+    ///  valid).
     ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
-    ///  Proof is invalid). MUST emit the NotVerified event in this case.
+    ///  Proof is invalid).
     /// @param proof A zk-SNARK.
     /// @param inputs Public inputs which accompany Proof.
     /// @param verifyingKeyId A unique identifier (known to this verifier
