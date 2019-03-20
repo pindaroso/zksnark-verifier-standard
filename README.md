@@ -1,6 +1,6 @@
 # zksnark-standards
 
-This repo contains EIP's for two standards relating to zk-SNARK verification:
+This repo contains EIPs for two standards relating to zk-SNARK verification:
 
 - zk-SNARK 'Verifier' standard
 - zk-SNARK 'Verifier Registry' standard
@@ -8,3 +8,4 @@ This repo contains EIP's for two standards relating to zk-SNARK verification:
 # implementations
 
 Please see the example implementations and test scripts in this repo.
+
