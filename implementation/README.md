@@ -17,7 +17,7 @@ This will also install the correct version of Ganache.
 Spin up Ganache and Truffle in one terminal.
 
 ```sh
-npx ganache-cli -a 10 -e 1000 -l 80000000
+npx ganache-cli -a 10 -e 1000
 ```
 
 Leave this window open. Then open another terminal and start the tests.
