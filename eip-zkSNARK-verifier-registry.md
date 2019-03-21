@@ -56,7 +56,7 @@ This standard was initially proposed by [EY](https://www.ey.com).
 
 
 ```solidity
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 
 /// @title EIP-XXXX Token Commitment Standard

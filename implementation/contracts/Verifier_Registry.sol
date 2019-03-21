@@ -18,7 +18,7 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.6;
 
 import "./Verifier_Register_Library.sol";
 import "./Verifier_Interface.sol";
@@ -52,12 +52,12 @@ contract Verifier_Registry {
 
 
     //This is the only getter function required by Verifier contracts. The other getter functions are an ugly consequence of limitations of not being able to easily 'get' data from mappings and structs in the current EVM.
-    function getVk(bytes32 _vkId) public view returns (uint256[]) {
+    function getVk(bytes32 _vkId) public view returns (uint256[] memory) {
         return vkRegister[_vkId].vk;
     }
 
     function registerVerifierContract(address _verifierContract) public returns (bool) {
-        require(verifierContractRegister[_verifierContract].contractAddress == 0, "Contract already registered");
+        require(verifierContractRegister[_verifierContract].contractAddress == address(0), "Contract already registered");
 
         //create a new entry in the verifierContractRegister
         verifierContractRegister[_verifierContract].contractAddress = _verifierContract;
@@ -69,7 +69,7 @@ contract Verifier_Registry {
         return true;
     }
 
-    function registerVk(uint256[] _vk, address[] _verifierContracts) public returns (bytes32) {
+    function registerVk(uint256[] memory _vk, address[] memory _verifierContracts) public returns (bytes32) {
         //create a new vkId
         //VKID has to be a HASH of the contents of the vk, or people could call a verifier expecting their proof to be checked against a vk, but end up with a false positive (or false negative). due to a different vk being stored against the vkId in the verifier they call.
         bytes32 vkId = createNewVkId(_vk);
@@ -81,7 +81,7 @@ contract Verifier_Registry {
 
         for (uint i = 0; i < _verifierContracts.length; i++) {
             //ensure the verifier contracts are all registered
-            require(verifierContractRegister[_verifierContracts[i]].contractAddress != 0, "Verifier contract not yet registered");
+            require(verifierContractRegister[_verifierContracts[i]].contractAddress != address(0), "Verifier contract not yet registered");
 
             //update the verifierContractRegister:
             verifierContractRegister[_verifierContracts[i]].vkIds.push(vkId);
@@ -98,7 +98,7 @@ contract Verifier_Registry {
         return vkId;
     }
 
-    function submitProof(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (bytes32) {
+    function submitProof(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public returns (bytes32) {
 
       require(vkRegister[_vkId].vkId == _vkId, "vkId not yet registered");
       //duplicate proofs are allowed - no check required!
@@ -121,9 +121,9 @@ contract Verifier_Registry {
     }
 
     //OVERLOADED - designed for verifier contracts to call, so as to associate themselves with the proof
-    function submitProof(uint256[] _proof, uint256[] _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32) {
+    function submitProof(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32) {
 
-        require(verifierContractRegister[_verifierContract].contractAddress != 0, "Verifier contract not yet registered");
+        require(verifierContractRegister[_verifierContract].contractAddress != address(0), "Verifier contract not yet registered");
         require(vkRegister[_vkId].vkId == _vkId, "vkId not yet registered");
         //duplicate proofs are allowed - no check required!
 
@@ -149,10 +149,10 @@ contract Verifier_Registry {
     }
 
 
-    function submitProofAndVerify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32 proofId, bool result) {
+    function submitProofAndVerify(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId, address _verifierContract) public returns (bytes32 proofId, bool result) {
 
       require(vkRegister[_vkId].vkId == _vkId, "vkId not yet registered");
-      require(verifierContractRegister[_verifierContract].contractAddress != 0, "Verifier contract not yet registered");
+      require(verifierContractRegister[_verifierContract].contractAddress != address(0), "Verifier contract not yet registered");
       //duplicate proofs are allowed - no check required!
 
       proofId = createNewProofId(_proof, _inputs);
@@ -182,7 +182,7 @@ contract Verifier_Registry {
       emit NewAttestation(proofId, _verifierContract, result);
 
       //attestProof
-      proofRegister[proofId].results[verifierContract] = result;
+      proofRegister[proofId].results[address(verifierContract)] = result;
       proofRegister[proofId].verifierCallers[msg.sender]=msg.sender;
 
       return (proofId, result);
@@ -212,7 +212,7 @@ contract Verifier_Registry {
 
 
     //including vkId is important, because otherwise a proof might be 'verified' against a bogus vk
-    function attestProofs(bytes32[] _proofIds, bytes32[] _vkIds, bool[] _results) public {
+    function attestProofs(bytes32[] memory _proofIds, bytes32[] memory _vkIds, bool[] memory _results) public {
 
         for (uint i = 0; i < _proofIds.length; i++) {
             bytes32 proofId;
@@ -238,11 +238,11 @@ contract Verifier_Registry {
 
     /*TODO - implement this
     */
-    //function challengeAttestation(bytes32 _proofId, uint256[] _proof, uint256[] _inputs, address _verifierContract) public {}
+    //function challengeAttestation(bytes32 _proofId, uint256[] _proof, uint256[] memory _inputs, address _verifierContract) public {}
 
 
     //we put this vkId creation in the registry, so that people 'trust' its calculation.
-    function createNewVkId(uint256[] _vk) public pure returns (bytes32) {
+    function createNewVkId(uint256[] memory _vk) public pure returns (bytes32) {
 
         bytes32 newVkId = keccak256(abi.encodePacked(_vk));
 
@@ -250,7 +250,7 @@ contract Verifier_Registry {
     }
 
     //we put this vkId creation in the registry, so that people 'trust' its calculation.
-    function createNewProofId(uint256[] _proof, uint256[] _inputs) public pure returns (bytes32) {
+    function createNewProofId(uint256[] memory _proof, uint256[] memory _inputs) public pure returns (bytes32) {
 
         bytes32 newProofId = keccak256(abi.encodePacked(_proof, _inputs));
 
@@ -265,30 +265,30 @@ contract Verifier_Registry {
 
     function getProofEntryProofId(bytes32 _proofId) public view returns (bytes32) {return proofRegister[_proofId].proofId;}
 
-    function getProofEntryVkIds(bytes32 _proofId) public view returns (bytes32[]) {return proofRegister[_proofId].vkIds;}
+    function getProofEntryVkIds(bytes32 _proofId) public view returns (bytes32[] memory) {return proofRegister[_proofId].vkIds;}
 
-    function getProofEntryProofSubmitters(bytes32 _proofId) public view returns (address[]) {return proofRegister[_proofId].proofSubmitters;}
+    function getProofEntryProofSubmitters(bytes32 _proofId) public view returns (address[] memory) {return proofRegister[_proofId].proofSubmitters;}
 
-    function getProofEntryVerifiers(bytes32 _proofId) public view returns (address[]) {return proofRegister[_proofId].verifiers;}
+    function getProofEntryVerifiers(bytes32 _proofId) public view returns (address[] memory) {return proofRegister[_proofId].verifiers;}
 
     function getProofEntryResult(bytes32 _proofId, address _verifier) public view returns (bool) {return proofRegister[_proofId].results[_verifier];}
 
     function getProofEntryVerifierCaller(bytes32 _proofId, address _verifier) public view returns (address) {return proofRegister[_proofId].verifierCallers[_verifier];}
 
-    function getProofEntryDescription(bytes32 _proofId) public view returns (string) {return proofRegister[_proofId].description;}
+    function getProofEntryDescription(bytes32 _proofId) public view returns (string memory) {return proofRegister[_proofId].description;}
 
 
     function getVkEntryVkId(bytes32 _vkId) public view returns (bytes32) {return vkRegister[_vkId].vkId;}
 
-    function getVkEntryVk(bytes32 _vkId) public view returns (uint256[]) {return vkRegister[_vkId].vk;}
+    function getVkEntryVk(bytes32 _vkId) public view returns (uint256[] memory) {return vkRegister[_vkId].vk;}
 
     function getVkEntryVkSubmitter(bytes32 _vkId) public view returns (address) {return vkRegister[_vkId].vkSubmitter;}
 
-    function getVkEntryVerifiers(bytes32 _vkId) public view returns (address[]) {return vkRegister[_vkId].verifiers;}
+    function getVkEntryVerifiers(bytes32 _vkId) public view returns (address[] memory) {return vkRegister[_vkId].verifiers;}
 
-    function getVkEntryProofIds(bytes32 _vkId) public view returns (bytes32[]) {return vkRegister[_vkId].proofIds;}
+    function getVkEntryProofIds(bytes32 _vkId) public view returns (bytes32[] memory) {return vkRegister[_vkId].proofIds;}
 
-    function getVkEntryDescription(bytes32 _vkId) public view returns (string) {return vkRegister[_vkId].description;}
+    function getVkEntryDescription(bytes32 _vkId) public view returns (string memory) {return vkRegister[_vkId].description;}
 
 
     function getVerifierContractAddress(address _contractAddress) public view returns (address) {return verifierContractRegister[_contractAddress].contractAddress;}
@@ -297,10 +297,10 @@ contract Verifier_Registry {
 
     function getVerifierContractEntryOwner(address _contractAddress) public view returns (address) {return verifierContractRegister[_contractAddress].owner;}
 
-    function getVerifierContractEntryVkIds(address _contractAddress) public view returns (bytes32[]) {return verifierContractRegister[_contractAddress].vkIds;}
+    function getVerifierContractEntryVkIds(address _contractAddress) public view returns (bytes32[] memory) {return verifierContractRegister[_contractAddress].vkIds;}
 
-    function getVerifierContractEntryProofIds(address _contractAddress) public view returns (bytes32[]) {return verifierContractRegister[_contractAddress].proofIds;}
+    function getVerifierContractEntryProofIds(address _contractAddress) public view returns (bytes32[] memory) {return verifierContractRegister[_contractAddress].proofIds;}
 
-    function getVerifierContractEntryDescription(address _contractAddress) public view returns (string) {return verifierContractRegister[_contractAddress].description;}
+    function getVerifierContractEntryDescription(address _contractAddress) public view returns (string memory) {return verifierContractRegister[_contractAddress].description;}
 
 }

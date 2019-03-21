@@ -19,13 +19,13 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.6;
 
 interface Verifier_Interface {
 
-  function verify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bool);
+  function verify(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external returns (bool);
 
-  function verifyFromRegistry(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external returns (bool);
+  function verifyFromRegistry(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external returns (bool);
 
   function getRegistry() external view returns (address);
 

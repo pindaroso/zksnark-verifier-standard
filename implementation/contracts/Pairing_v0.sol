@@ -7,7 +7,7 @@
 
 //Points library and this Pairing_v0 library modularised by Michael Connor 2019
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.6;
 
 import "./Points.sol";
 
@@ -16,11 +16,11 @@ library Pairing_v0 {
     using Points for *;
 
     /// @return the generator of G1
-    function P1() pure internal returns (Points.G1Point) {
+    function P1() pure internal returns (Points.G1Point memory) {
         return Points.G1Point(1, 2);
     }
     /// @return the generator of G2
-    function P2() pure internal returns (Points.G2Point) {
+    function P2() pure internal returns (Points.G2Point memory) {
         return Points.G2Point(
             [11559732032986387107991004021392285783925812861821192530917403151452391805634,
              10857046999023057135944570762232829481370756359578518086990519993285655852781],
@@ -29,7 +29,7 @@ library Pairing_v0 {
         );
     }
     /// @return the negation of p, i.e. p.addition(p.negate()) should be zero.
-    function negate(Points.G1Point p) pure internal returns (Points.G1Point) {
+    function negate(Points.G1Point memory p) pure internal returns (Points.G1Point memory) {
         // The prime q in the base field F_q for G1
         uint q = 21888242871839275222246405745257275088696311157297823662689037894645226208583;
         if (p.X == 0 && p.Y == 0)
@@ -37,7 +37,7 @@ library Pairing_v0 {
         return Points.G1Point(p.X, q - (p.Y % q));
     }
     /// @return the sum of two points of G1
-    function addition(Points.G1Point p1, Points.G1Point p2) internal returns (Points.G1Point r) {
+    function addition(Points.G1Point memory p1, Points.G1Point memory p2) internal returns (Points.G1Point memory r) {
         uint[4] memory input;
         input[0] = p1.X;
         input[1] = p1.Y;
@@ -53,7 +53,7 @@ library Pairing_v0 {
     }
     /// @return the product of a point on G1 and a scalar, i.e.
     /// p == p.scalar_mul(1) and p.addition(p) == p.scalar_mul(2) for all points p.
-    function scalar_mul(Points.G1Point p, uint s) internal returns (Points.G1Point r) {
+    function scalar_mul(Points.G1Point memory p, uint s) internal returns (Points.G1Point memory r) {
         uint[3] memory input;
         input[0] = p.X;
         input[1] = p.Y;
@@ -70,7 +70,7 @@ library Pairing_v0 {
     /// e(p1[0], p2[0]) *  .... * e(p1[n], p2[n]) == 1
     /// For example pairing([P1(), P1().negate()], [P2(), P2()]) should
     /// return true.
-    function pairing(Points.G1Point[] p1, Points.G2Point[] p2) internal returns (bool) {
+    function pairing(Points.G1Point[] memory p1, Points.G2Point[] memory p2) internal returns (bool) {
         require(p1.length == p2.length, "EC pairing p1 length != p2 length");
         uint elements = p1.length;
         uint inputSize = elements * 6;
@@ -95,7 +95,7 @@ library Pairing_v0 {
         return out[0] != 0;
     }
     /// Convenience method for a pairing check for two pairs.
-    function pairingProd2(Points.G1Point a1, Points.G2Point a2, Points.G1Point b1, Points.G2Point b2) internal returns (bool) {
+    function pairingProd2(Points.G1Point memory a1, Points.G2Point memory a2, Points.G1Point memory b1, Points.G2Point memory b2) internal returns (bool) {
         Points.G1Point[] memory p1 = new Points.G1Point[](2);
         Points.G2Point[] memory p2 = new Points.G2Point[](2);
         p1[0] = a1;
@@ -106,9 +106,9 @@ library Pairing_v0 {
     }
     /// Convenience method for a pairing check for three pairs.
     function pairingProd3(
-            Points.G1Point a1, Points.G2Point a2,
-            Points.G1Point b1, Points.G2Point b2,
-            Points.G1Point c1, Points.G2Point c2
+            Points.G1Point memory a1, Points.G2Point memory a2,
+            Points.G1Point memory b1, Points.G2Point memory b2,
+            Points.G1Point memory c1, Points.G2Point memory c2
     ) internal returns (bool) {
         Points.G1Point[] memory p1 = new Points.G1Point[](3);
         Points.G2Point[] memory p2 = new Points.G2Point[](3);
@@ -122,10 +122,10 @@ library Pairing_v0 {
     }
     /// Convenience method for a pairing check for four pairs.
     function pairingProd4(
-            Points.G1Point a1, Points.G2Point a2,
-            Points.G1Point b1, Points.G2Point b2,
-            Points.G1Point c1, Points.G2Point c2,
-            Points.G1Point d1, Points.G2Point d2
+            Points.G1Point memory a1, Points.G2Point memory a2,
+            Points.G1Point memory b1, Points.G2Point memory b2,
+            Points.G1Point memory c1, Points.G2Point memory c2,
+            Points.G1Point memory d1, Points.G2Point memory d2
     ) internal returns (bool) {
         Points.G1Point[] memory p1 = new Points.G1Point[](4);
         Points.G2Point[] memory p2 = new Points.G2Point[](4);
