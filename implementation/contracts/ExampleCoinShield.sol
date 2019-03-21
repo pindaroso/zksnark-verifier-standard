@@ -7,7 +7,7 @@ Only a (very basic) 'mint' function is given in this example implementation. In 
 Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 import "./Ownable.sol"; //Ownable functions allow initializers to be re-initialised every time an upgrade happens
 import "./Coin.sol"; //ERC-20 contract
@@ -47,7 +47,7 @@ contract ExampleCoinShield is Ownable {
     /**
     The mint function accepts coin and creates the same amount as a commitment.
     */
-    function mint(uint256 amount, uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public payable {
+    function mint(uint256 amount, uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public payable {
 
         bool result = v.verify(_proof, _inputs, _vkId);
 

@@ -1,6 +1,6 @@
 // This file is LGPL3 Licensed
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 /**
  * @title Elliptic curve operations on twist points for alt_bn128
@@ -234,7 +234,7 @@ library BN256G2 {
         uint256 pt1zx, uint256 pt1zy,
         uint256 pt2xx, uint256 pt2xy,
         uint256 pt2yx, uint256 pt2yy,
-        uint256 pt2zx, uint256 pt2zy) internal pure returns (uint256[6] pt3) {
+        uint256 pt2zx, uint256 pt2zy) internal pure returns (uint256[6] memory pt3) {
             if (pt1zx == 0 && pt1zy == 0) {
                 (
                     pt3[PTXX], pt3[PTXY],
@@ -245,7 +245,7 @@ library BN256G2 {
                     pt2yx, pt2yy,
                     pt2zx, pt2zy
                 );
-                return;
+                return pt3;
             } else if (pt2zx == 0 && pt2zy == 0) {
                 (
                     pt3[PTXX], pt3[PTXY],
@@ -256,7 +256,7 @@ library BN256G2 {
                     pt1yx, pt1yy,
                     pt1zx, pt1zy
                 );
-                return;
+                return pt3;
             }
 
             (pt2yx,     pt2yy)     = _FQ2Mul(pt2yx, pt2yy, pt1zx, pt1zy); // U1 = y2 * z1
@@ -271,7 +271,7 @@ library BN256G2 {
                         pt3[PTYX], pt3[PTYY],
                         pt3[PTZX], pt3[PTZY]
                     ) = _ECTwistDoubleJacobian(pt1xx, pt1xy, pt1yx, pt1yy, pt1zx, pt1zy);
-                    return;
+                    return pt3;
                 }
                 (
                     pt3[PTXX], pt3[PTXY],
@@ -282,7 +282,7 @@ library BN256G2 {
                     0, 0,
                     0, 0
                 );
-                return;
+                return pt3;
             }
 
             (pt2zx,     pt2zy)     = _FQ2Mul(pt1zx, pt1zy, pt2zx,     pt2zy);     // W = z1 * z2
@@ -340,7 +340,7 @@ library BN256G2 {
         uint256 pt1xx, uint256 pt1xy,
         uint256 pt1yx, uint256 pt1yy,
         uint256 pt1zx, uint256 pt1zy
-    ) internal pure returns(uint256[6] pt2) {
+    ) internal pure returns(uint256[6] memory pt2) {
         while (d != 0) {
             if ((d & 1) != 0) {
                 pt2 = _ECTwistAddJacobian(
@@ -379,11 +379,11 @@ library Pairing_v1 {
     using Points for *;
 
     /// @return the generator of G1
-    function P1() pure internal returns (Points.G1Point) {
+    function P1() pure internal returns (Points.G1Point memory) {
         return Points.G1Point(1, 2);
     }
     /// @return the generator of G2
-    function P2() pure internal returns (Points.G2Point) {
+    function P2() pure internal returns (Points.G2Point memory) {
         return Points.G2Point(
             [11559732032986387107991004021392285783925812861821192530917403151452391805634,
              10857046999023057135944570762232829481370756359578518086990519993285655852781],
@@ -392,7 +392,7 @@ library Pairing_v1 {
         );
     }
     /// @return the negation of p, i.e. p.addition(p.negate()) should be zero.
-    function negate(Points.G1Point p) pure internal returns (Points.G1Point) {
+    function negate(Points.G1Point memory p) pure internal returns (Points.G1Point memory) {
         // The prime q in the base field F_q for G1
         uint q = 21888242871839275222246405745257275088696311157297823662689037894645226208583;
         if (p.X == 0 && p.Y == 0)
@@ -400,7 +400,7 @@ library Pairing_v1 {
         return Points.G1Point(p.X, q - (p.Y % q));
     }
     /// @return the sum of two points of G1
-    function addition(Points.G1Point p1, Points.G1Point p2) internal returns (Points.G1Point r) {
+    function addition(Points.G1Point memory p1, Points.G1Point memory p2) internal returns (Points.G1Point memory r) {
         uint[4] memory input;
         input[0] = p1.X;
         input[1] = p1.Y;
@@ -415,7 +415,7 @@ library Pairing_v1 {
         require(success, "EC addition failed");
     }
     /// @return the sum of two points of G2
-    function addition2(Points.G2Point p1, Points.G2Point p2) internal pure returns (Points.G2Point r) {
+    function addition2(Points.G2Point memory p1, Points.G2Point memory p2) internal pure returns (Points.G2Point memory r) {
         (r.X[1], r.X[0], r.Y[1], r.Y[0]) = BN256G2.ECTwistAdd(p1.X[1],p1.X[0],p1.Y[1],p1.Y[0],p2.X[1],p2.X[0],p2.Y[1],p2.Y[0]);
 
         //if (r.X[1] == 0 && r.X[0] == 0 && r.Y[1] == 0 && r.Y[0] == 0) {
@@ -424,7 +424,7 @@ library Pairing_v1 {
     }
     /// @return the product of a point on G1 and a scalar, i.e.
     /// p == p.scalar_mul(1) and p.addition(p) == p.scalar_mul(2) for all points p.
-    function scalar_mul(Points.G1Point p, uint s) internal returns (Points.G1Point r) {
+    function scalar_mul(Points.G1Point memory p, uint s) internal returns (Points.G1Point memory r) {
         uint[3] memory input;
         input[0] = p.X;
         input[1] = p.Y;
@@ -441,7 +441,7 @@ library Pairing_v1 {
     /// e(p1[0], p2[0]) *  .... * e(p1[n], p2[n]) == 1
     /// For example pairing([P1(), P1().negate()], [P2(), P2()]) should
     /// return true.
-    function pairing(Points.G1Point[] p1, Points.G2Point[] p2) internal returns (bool) {
+    function pairing(Points.G1Point[] memory p1, Points.G2Point[] memory p2) internal returns (bool) {
         require(p1.length == p2.length, "EC pairing p1 length != p2 length");
         uint elements = p1.length;
         uint inputSize = elements * 6;
@@ -466,7 +466,7 @@ library Pairing_v1 {
         return out[0] != 0;
     }
     /// Convenience method for a pairing check for two pairs.
-    function pairingProd2(Points.G1Point a1, Points.G2Point a2, Points.G1Point b1, Points.G2Point b2) internal returns (bool) {
+    function pairingProd2(Points.G1Point memory a1, Points.G2Point memory a2, Points.G1Point memory b1, Points.G2Point memory b2) internal returns (bool) {
         Points.G1Point[] memory p1 = new Points.G1Point[](2);
         Points.G2Point[] memory p2 = new Points.G2Point[](2);
         p1[0] = a1;
@@ -477,9 +477,9 @@ library Pairing_v1 {
     }
     /// Convenience method for a pairing check for three pairs.
     function pairingProd3(
-            Points.G1Point a1, Points.G2Point a2,
-            Points.G1Point b1, Points.G2Point b2,
-            Points.G1Point c1, Points.G2Point c2
+            Points.G1Point memory a1, Points.G2Point memory a2,
+            Points.G1Point memory b1, Points.G2Point memory b2,
+            Points.G1Point memory c1, Points.G2Point memory c2
     ) internal returns (bool) {
         Points.G1Point[] memory p1 = new Points.G1Point[](3);
         Points.G2Point[] memory p2 = new Points.G2Point[](3);
@@ -493,10 +493,10 @@ library Pairing_v1 {
     }
     /// Convenience method for a pairing check for four pairs.
     function pairingProd4(
-            Points.G1Point a1, Points.G2Point a2,
-            Points.G1Point b1, Points.G2Point b2,
-            Points.G1Point c1, Points.G2Point c2,
-            Points.G1Point d1, Points.G2Point d2
+            Points.G1Point memory a1, Points.G2Point memory a2,
+            Points.G1Point memory b1, Points.G2Point memory b2,
+            Points.G1Point memory c1, Points.G2Point memory c2,
+            Points.G1Point memory d1, Points.G2Point memory d2
     ) internal returns (bool) {
         Points.G1Point[] memory p1 = new Points.G1Point[](4);
         Points.G2Point[] memory p2 = new Points.G2Point[](4);

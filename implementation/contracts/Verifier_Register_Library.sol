@@ -23,7 +23,7 @@ I've separated these Structs from the main Verifier_Registry, to allow other Reg
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 library Verifier_Register_Library {
 

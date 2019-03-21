@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 
 /**
@@ -14,7 +14,7 @@ contract Ownable {
   event OwnershipTransferred(address previousOwner, address newOwner);
 
   // Owner of the contract
-  address public _owner;
+  address payable public _owner;
 
   /**
    * @dev Throws if called by any account other than the owner.
@@ -42,7 +42,7 @@ contract Ownable {
   /**
    * @dev Sets a new owner address
    */
-  function setOwner(address newOwner) internal {
+  function setOwner(address payable newOwner) internal {
     _owner = newOwner;
   }
 
@@ -50,7 +50,7 @@ contract Ownable {
    * @dev Allows the current owner to transfer control of the contract to a newOwner.
    * @param newOwner The address to transfer ownership to.
    */
-  function transferOwnership(address newOwner) public onlyOwner {
+  function transferOwnership(address payable newOwner) public onlyOwner {
     require(newOwner != address(0));
     emit OwnershipTransferred(owner(), newOwner);
     setOwner(newOwner);

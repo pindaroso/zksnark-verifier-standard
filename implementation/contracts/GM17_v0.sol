@@ -27,7 +27,7 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 import "./Ownable.sol";
 import "./GM17_lib_v0.sol";
@@ -57,7 +57,7 @@ contract GM17_v0 is Ownable {
       require(R.registerVerifierContract(address(this)), "Registration of this Verifier contract has failed");
   }
 
-  function verify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (bool result) {
+  function verify(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public returns (bool result) {
 
       bytes32 proofId;
 
@@ -73,7 +73,7 @@ contract GM17_v0 is Ownable {
       return result;
   }
 
-  function verifyFromRegistry(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external onlyRegistry returns (bool result) {
+  function verifyFromRegistry(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external onlyRegistry returns (bool result) {
 
       if (verificationCalculation(_proof, _inputs, _vkId) == 0) {
           result = true;
@@ -85,7 +85,7 @@ contract GM17_v0 is Ownable {
   }
 
   //NOTE: this is an internal function - made public only for truffle testing.
-  function verificationCalculation(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (uint) {
+  function verificationCalculation(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public returns (uint) {
 
       GM17_lib_v0.Proof_GM17_v0 memory proof;
       Points.G1Point memory vk_dot_inputs;
@@ -114,7 +114,7 @@ contract GM17_v0 is Ownable {
 
       require(_inputs.length + 1 == vk.query.length, "Length of inputs[] or vk.query is incorrect!");
 
-      for (i = 0; i < _inputs.length; i++)
+      for (uint i = 0; i < _inputs.length; i++)
           vk_dot_inputs = Pairing_v1.addition(vk_dot_inputs, Pairing_v1.scalar_mul(vk.query[i + 1], _inputs[i]));
 
       vk_dot_inputs = Pairing_v1.addition(vk_dot_inputs, vk.query[0]);

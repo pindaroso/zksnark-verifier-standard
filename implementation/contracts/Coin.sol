@@ -6,7 +6,7 @@ Example ERC-20 token contract contract.
 Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 import "./ERC20Interface.sol";
 import "./SafeMath.sol";
@@ -17,7 +17,7 @@ contract Coin is ERC20Interface {
 
   string public symbol;
   string public  name;
-  address public owner;
+  address payable public owner;
   uint256 public totalSupply;
 
 
@@ -68,13 +68,6 @@ contract Coin is ERC20Interface {
     return allowed[_owner][_spender];
   }
 
-  /**
-  * @dev Total number of tokens in existence
-  */
-  function totalSupply() public view returns (uint256) {
-    return totalSupply;
-  }
-
 
     /**
      * @dev Internal function that mints an amount of the token and assigns it to
@@ -84,7 +77,7 @@ contract Coin is ERC20Interface {
      * @param _amount The amount that will be created.
      */
     function mint(address _account, uint256 _amount) public {
-      require(_account != 0);
+      require(_account != address(0));
       require(_amount > 0);
       totalSupply = totalSupply.add(_amount);
       balances[_account] = balances[_account].add(_amount);
@@ -98,7 +91,7 @@ contract Coin is ERC20Interface {
      * @param _amount The amount that will be burnt.
      */
     function burn(address _account, uint256 _amount) public {
-      require(_account != 0);
+      require(_account != address(0));
       require(_amount <= balances[_account]);
 
       totalSupply = totalSupply.sub(_amount);

@@ -27,7 +27,7 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.6;
 
 import "./Ownable.sol";
 import "./PGHR13_lib_v0.sol";
@@ -59,7 +59,7 @@ contract PGHR13_v0 is Ownable {
       require(R.registerVerifierContract(address(this)), "Registration of this Verifier contract has failed");
   }
 
-  function verify(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (bool result) {
+  function verify(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public returns (bool result) {
 
       bytes32 proofId;
       proofId = R.submitProof(_proof, _inputs, _vkId, address(this));
@@ -76,7 +76,7 @@ contract PGHR13_v0 is Ownable {
   }
 
 
-  function verifyFromRegistry(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) external onlyRegistry returns (bool result) {
+  function verifyFromRegistry(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external onlyRegistry returns (bool result) {
 
       if (verificationCalculation(_proof, _inputs, _vkId) == 0) {
           result = true;
@@ -88,7 +88,7 @@ contract PGHR13_v0 is Ownable {
   }
 
   //NOTE: this is an internal function - made public only for truffle testing.
-  function verificationCalculation(uint256[] _proof, uint256[] _inputs, bytes32 _vkId) public returns (uint) {
+  function verificationCalculation(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public returns (uint) {
 
       PGHR13_lib_v0.Proof_PGHR13_v0 memory proof;
       Points.G1Point memory vk_dot_inputs;
@@ -124,7 +124,7 @@ contract PGHR13_v0 is Ownable {
 
       require(_inputs.length + 1 == vk.IC.length, "Length of inputs[] or vk.IC is incorrect!");
 
-      for (i = 0; i < _inputs.length; i++)
+      for (uint i = 0; i < _inputs.length; i++)
           vk_dot_inputs = Pairing_v0.addition(vk_dot_inputs, Pairing_v0.scalar_mul(vk.IC[i + 1], _inputs[i]));
 
       vk_dot_inputs = Pairing_v0.addition(vk_dot_inputs, vk.IC[0]);
