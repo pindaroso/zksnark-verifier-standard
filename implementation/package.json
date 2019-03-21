@@ -21,7 +21,7 @@
   "license": "ISC",
   "devDependencies": {
     "ganache-cli": "^6.4.1",
-    "solc": "^0.4.24",
+    "solc": "^0.4.25",
     "truffle": "^5.0.8"
   }
 }

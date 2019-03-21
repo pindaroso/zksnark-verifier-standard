@@ -7,7 +7,7 @@ Only a (very basic) 'mint' function is given in this example implementation. In 
 Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./Ownable.sol"; //Ownable functions allow initializers to be re-initialised every time an upgrade happens
 import "./Coin.sol"; //ERC-20 contract

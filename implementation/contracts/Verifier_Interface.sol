@@ -19,7 +19,7 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 interface Verifier_Interface {
 

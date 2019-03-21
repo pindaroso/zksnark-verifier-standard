@@ -27,7 +27,7 @@ Harry R
 @notice Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./Ownable.sol";
 import "./PGHR13_lib_v0.sol";

@@ -6,7 +6,7 @@ Example ERC-20 token contract contract.
 Do not use this example in any production code!
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./ERC20Interface.sol";
 import "./SafeMath.sol";

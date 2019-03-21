@@ -10,7 +10,7 @@ CREDITS:
 Points library and this Struct library modularised by Michael Connor, EY, 2019
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./Points.sol";
 

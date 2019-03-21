@@ -7,7 +7,7 @@
 
 //Points library and this Pairing_v0 library modularised by Michael Connor 2019
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./Points.sol";
 
