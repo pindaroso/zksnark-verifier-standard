@@ -27,13 +27,14 @@ zk-SNARKs are a promising area of interest for the Ethereum community. Key appli
 
 A standard interface for verifying all zk-SNARKs will allow applications to more easily implement private transactions, private contracts, and scaling solutions; and to extract and interpret the limited information which gets emitted during zk-SNARK verifications.
 
-This standard was initially proposed by [EY](https://www.ey.com), and was inspired in particular by the requirements of businesses wishing to keep their agreements, transactions, and supply chain activities confidential - all whilst still benefiting from the commonly cited strengths of blockchains and smart contracts.
+This standard was initially proposed by EY, and was inspired in particular by the requirements of businesses wishing to keep their agreements, transactions, and supply chain activities confidential—all whilst still benefiting from the commonly cited strengths of blockchains and smart contracts.
 
 ## Specification
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
-Common terminology is used in the specification below. The terminology is consistent with XXXSPECIFIC_REFERENCEXXX
-* Adhering Contract: A Verifier contract which adheres to this specification.
+Terminology in this specification is used consistently with libsnark, as provided in that project's README. 
+
+* Adhering Contract — A Verifier contract which adheres to this specification.
 * Arithmetic circuit: An abstraction of logical statements into addition and multiplication gates.
 * Public Inputs: often denoted as a vector 'x' in zk-SNARKs literature, and denoted `inputs` in this interface. An arithmetic circuit can be thought of as taking two parameters; the Public Inputs, 'x', and a secret 'witness', 'w'. This interface standardises functions which can load the `inputs` into an Adhering Contract.
 * Proof: A 'prover' who wants to 'prove' knowledge of some secret witness 'w' (which satisfies an arithmetic circuit), generates a `proof` from: the circuit's Proving Key; their secret witness 'w'; and its corresponding Public Inputs 'x'. Together, a pair `(proof, inputs)` of satisfying `inputs` and their corresponding `proof` forms a zk-snark.
@@ -43,7 +44,7 @@ Common terminology is used in the specification below. The terminology is consis
 
 
 ```solidity
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.6;
 
 /// @title EIP-XXXX zk-SNARK Verifier Standard
 /// @dev See https://github.com/EYBlockchain/zksnark-verifier-standard
@@ -105,16 +106,16 @@ interface ERC165 {
 
 ### Taxonomy
 
-$C$ - A satisfiable arithmetic circuit abstraction of logical statements.
+$C​$ — A satisfiable arithmetic circuit abstraction of logical statements.
 
-$\lambda$ - A random number, generated at the 'setup' phase - commonly referred to as 'toxic waste', because knowledge of $\lambda$ would allow an untrustworthy party to create 'false' proofs which would verify as 'true'. $\lambda$ must be destroyed.
+$\lambda​$ - A random number, generated at the 'setup' phase - commonly referred to as 'toxic waste', because knowledge of $\lambda​$ would allow an untrustworthy party to create 'false' proofs which would verify as 'true'. $\lambda​$ must be destroyed.
 
-$pk$ - The proving key for a particular circuit $C$.
+$pk​$ - The proving key for a particular circuit $C​$.
 
 $vk$ - The verifying key for a particular circuit $C$.
 
-Both $pk$ and $vk$ are generated as a pair by some function $G$:
-$$(pk, vk) = G(\lambda, C)$$
+Both $pk​$ and $vk​$ are generated as a pair by some function $G​$:
+$$(pk, vk) = G(\lambda, C)​$$
 
 Note: $C$ can be represented unambiguously by either of $pk$ or $vk$. In zk-SNARK constructions, $vk$ is much smaller in size than $pk$, so as to enable succinct verification on-chain. Hence, $vk$ is the representative of $C$ that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `verifyingKeyId`, where `verifyingKeyId` serves as a more succinct mapping to $vk$.
 
@@ -156,49 +157,41 @@ Detailed example implementations and Truffle tests of these example implementati
 
 ## References
 
-##### <a id="1"></a> Standards
+**Standards**
 
-1. <a id="1.1"></a> ERC-20 Token Standard. https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
-1. <a id="1.2"></a> ERC-165 Standard Interface Detection. https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
-1. <a id="1.3"></a> ERC-173 Contract Ownership Standard. https://github.com/ethereum/EIPs/issues/173
-1. <a id="1.4"></a> ERC-196 Precompiled contracts for addition and scalar multiplication on the elliptic curve alt_bn128. https://github.com/ethereum/EIPs/blob/master/EIPS/eip-196.md
-1. <a id="1.5"></a> ERC-197 Precompiled contracts for optimal ate pairing check on the elliptic curve alt_bn128. https://github.com/ethereum/EIPs/blob/master/EIPS/eip-197.md
-1. <a id="1.7"></a> Ethereum Name Service (ENS). https://ens.domains
-1. <a id="1.8"></a> RFC 2119 Key words for use in RFCs to Indicate Requirement Levels. https://www.ietf.org/rfc/rfc2119.txt
+1. ERC-20 Token Standard. https://eips.ethereum.org/EIPS/eip-20
 
+1. ERC-165 Standard Interface Detection. https://eips.ethereum.org/EIPS/eip-165
+1. ERC-173 Contract Ownership Standard (DRAFT). https://eips.ethereum.org/EIPS/eip-173
+1. ERC-196 Precompiled contracts for addition and scalar multiplication on the elliptic curve alt_bn128. https://eips.ethereum.org/EIPS/eip-196
+1. ERC-197 Precompiled contracts for optimal ate pairing check on the elliptic curve alt_bn128. https://eips.ethereum.org/EIPS/eip-197
+1. Ethereum Name Service (ENS). https://ens.domains
+1. RFC 2119 Key words for use in RFCs to Indicate Requirement Levels. https://www.ietf.org/rfc/rfc2119.txt
 
-##### <a id="2"></a> Issues
+##### Educational material:  zk-SNARKs
+1. Zcash. What are zk-SNARKs? https://z.cash/technology/zksnarks.html
+1. Vitalik Buterin. zk-SNARKs: Under the Hood. https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6
+1. Christian Reitweissner. zk-SNARKs in a Nutshell. https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell/
+1. Ben-Sasson, Chiesa, Tromer, et. al. Succinct Non-Interactive Zero Knowledge for a von Neumann Architecture. https://eprint.iacr.org/2013/879.pdf
 
-1. <a id="2.1"></a> Please refer to the [Github Repo](https://github.com/EYBlockchain/zksnark-verifier-standard/issues) for issues.
+##### Notable applications of zk-SNARKs
+ 1. EY. Implementation of a business agreement through Token Commitment transactions on the Ethereum mainnet. https://github.com/EYBlockchain/ZKPChallenge
+ 1. Zcash. https://z.cash
+ 1. Zcash. How Transactions Between Shielded Addresses Work. https://blog.z.cash/zcash-private-transactions/
 
-##### <a id="3"></a> Discussions
+##### Notable projects relating to zk-SNARKs
+  1. libsnark: A C++ Library for zk-SNARKs ("project README)". https://github.com/scipr-lab/libsnark
+  1. ZoKrates: Scalable Privacy-Preserving Off-Chain Computations. https://www.ise.tu-berlin.de/fileadmin/fg308/publications/2018/2018_eberhardt_ZoKrates.pdf
+  1. ZoKrates Project Repository. https://github.com/JacobEberhardt/ZoKrates
+  1. Joseph Stockermans. zkSNARKs: Driver's Ed. https://github.com/jstoxrocky/zksnarks_example
+  1. Christian Reitweissner - snarktest.solidity. https://gist.github.com/chriseth/f9be9d9391efc5beb9704255a8e2989d
 
-1. <a id="3.1"></a> Please refer to the [Github Repo](https://github.com/EYBlockchain/zksnark-verifier-standard/issues) for discussions.
-
-##### <a id="4"></a> Educational material:  zk-SNARKs
-1. <a id="4.1"></a> Zcash - What are zk-SNARKs? https://z.cash/technology/zksnarks.html
-1. <a id="4.2"></a> Vitalik Buterin - zk-SNARKs - Under the Hood. https://medium.com/@VitalikButerin/zk-snarks-under-the-hood-b33151a013f6
-1. <a id="4.3"></a> Christian Reitweissner - zk-SNARKs in a Nutshell. https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell/
-1. <a id="4.4"></a> Succinct Non-Interactive Zero Knowledge for a von Neumann Architecture. https://eprint.iacr.org/2013/879.pdf
-
-##### <a id="5"></a> Notable applications of zk-SNARKs
- 1. <a id="5.1"></a> [EY](https://www.ey.com) - Implementation of a business agreement through Token Commitment transactions on the Ethereum mainnet - https://github.com/EYBlockchain/ZKPChallenge
- 1. <a id="5.2"></a> Zcash - https://z.cash
- 1. <a id="5.3"></a> Zcash - How Transactions Between Shielded Addresses Work. https://blog.z.cash/zcash-private-transactions/
-
-##### <a id="6"></a> Notable projects relating to zk-SNARKs
-  1. <a id="6.1"></a> libsnark - C++ Library for zk-SNARKs. https://github.com/SCIPR-Lab/libsnark
-  1. <a id="6.2"></a> ZoKrates - Scalable Privacy-Preserving Off-Chain Computations. https://www.ise.tu-berlin.de/fileadmin/fg308/publications/2018/2018_eberhardt_ZoKrates.pdf
-  1. <a id="6.3"></a> Jacob Eberhardt - ZoKrates Github Repo. https://github.com/JacobEberhardt/ZoKrates
-  1. <a id="6.4"></a> Joseph Stockermans - zkSNARKs: Driver's Ed. https://github.com/jstoxrocky/zksnarks_example
-  1. <a id="6.5"></a> Christian Reitweissner - snarktest.solidity. https://gist.github.com/chriseth/f9be9d9391efc5beb9704255a8e2989d
-
-##### <a id="7"></a> Notable 'alternatives' to zk-SNARKs - areas of ongoing zero-knowledge proof research
-  1. <a id="7.1"></a> STARKs - https://vitalik.ca/general/2017/11/09/starks_part_1.html
-  1. <a id="7.2"></a> Bulletproofs - https://eprint.iacr.org/2017/1066.pdf
-  1. <a id="7.3"></a> Range Proofs - https://www.cosic.esat.kuleuven.be/ecrypt/provpriv2012/abstracts/canard.pdf
-  1. <a id="7.4"></a> Secure Enclaves - https://developer.apple.com/documentation/security/certificate_key_and_trust_services/keys/storing_keys_in_the_secure_enclave
-    https://software.intel.com/en-us/sgx
+##### Notable 'alternatives' to zk-SNARKs - areas of ongoing zero-knowledge proof research
+  1. Vitalik Buterin. STARKs. https://vitalik.ca/general/2017/11/09/starks_part_1.html
+  1. Bu ̈nz, Bootle, Boneh, et. al. Bulletproofs. https://eprint.iacr.org/2017/1066.pdf
+  1. Range Proofs. https://www.cosic.esat.kuleuven.be/ecrypt/provpriv2012/abstracts/canard.pdf
+  1. Apple. Secure Enclaves. https://developer.apple.com/documentation/security/certificate_key_and_trust_services/keys/storing_keys_in_the_secure_enclave
+  1. Intel Software Guard Extensions. https://software.intel.com/en-us/sgx
 
 
 ## Copyright
