@@ -32,13 +32,13 @@ This standard was initially proposed by EY, and was inspired in particular by th
 ## Specification
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
-Terminology in this specification is used consistently with libsnark, as provided in that project's README. 
+Terminology in this specification is used consistently with libsnark, as provided in that project's README.
 
 * Adhering Contract — A Verifier contract which adheres to this specification.
 * Arithmetic circuit: An abstraction of logical statements into addition and multiplication gates.
 * Public Inputs: often denoted as a vector 'x' in zk-SNARKs literature, and denoted `inputs` in this interface. An arithmetic circuit can be thought of as taking two parameters; the Public Inputs, 'x', and a secret 'witness', 'w'. This interface standardises functions which can load the `inputs` into an Adhering Contract.
 * Proof: A 'prover' who wants to 'prove' knowledge of some secret witness 'w' (which satisfies an arithmetic circuit), generates a `proof` from: the circuit's Proving Key; their secret witness 'w'; and its corresponding Public Inputs 'x'. Together, a pair `(proof, inputs)` of satisfying `inputs` and their corresponding `proof` forms a zk-snark.
-* Verifying Key: A 'trusted setup' calculation creates both a public 'Proving Key' and a public 'Verifying Key' from an arithmetic circuit. This interface does not provide a method for loading a Verifying Key onto the blockchain. An Adhering Contract SHALL be able to accept arguments of knowledge (`(proof, inputs)` pairs) for at least one Verifying Key. We shall call such Verifying Keys 'in-scope' Verifying Keys. An Adhering Contract MUST be able to interpret unambiguously a unique `verifyingKeyId` for each of its 'in-scope' Verifying Keys.
+* Verification Key: A 'trusted setup' calculation creates both a public 'Proving Key' and a public 'Verification Key' from an arithmetic circuit. This interface does not provide a method for loading a Verification Key onto the blockchain. An Adhering Contract SHALL be able to accept arguments of knowledge (`(proof, inputs)` pairs) for at least one Verification Key. We shall call such Verification Keys 'in-scope' Verification Keys. An Adhering Contract MUST be able to interpret unambiguously a unique `verificationKeyId` for each of its 'in-scope' Verification Keys.
 
 **Every ERC-XXXX compliant verifier contract must implement the `ERCXXXX` and `ERC165` interfaces** (subject to "caveats" below):
 
@@ -66,26 +66,12 @@ interface EIPXXXX /* is ERC165 */ {
     ///  Proof is invalid).
     /// @param proof A zk-SNARK.
     /// @param inputs Public inputs which accompany Proof.
-    /// @param verifyingKeyId A unique identifier (known to this verifier
-    ///  contract) for the Verifying Key to which Proof corresponds.
+    /// @param verificationKeyId A unique identifier (known to this verifier
+    ///  contract) for the Verification Key to which Proof corresponds.
     /// @return result The result of the verification calculation. True
     ///  if Proof is valid; false otherwise.
-    function verify(uint256[] calldata proof, uint256[] calldata inputs, bytes32 verifyingKeyId) external returns (bool result);
+    function verify(uint256[] calldata proof, uint256[] calldata inputs, bytes32 verificationKeyId) external returns (bool result);
 
-    /// @notice Checks the arguments of Proof, through elliptic curve
-    ///  pairing functions.
-    /// @dev
-    ///  MUST return `true` if Proof passes all checks (i.e. the Proof is
-    ///  valid).
-    ///  MUST return `false` if the Proof does not pass all checks (i.e. if the
-    ///  Proof is invalid).
-    /// @param proof A zk-SNARK.
-    /// @param inputs Public inputs which accompany Proof.
-    /// @param verifyingKeyId A unique identifier (known to this verifier
-    ///  contract) for the Verifying Key to which Proof corresponds.
-    /// @return result The result of the verification calculation. True
-    ///  if Proof is valid; false otherwise.
-    function verifyFromRegistry(uint256[] calldata proof, uint256[] calldata inputs, bytes32 verifyingKeyId) external returns (bool result);
 }
 ```
 ### Interface
@@ -106,33 +92,56 @@ interface ERC165 {
 
 ### Taxonomy
 
-$C​$ — A satisfiable arithmetic circuit abstraction of logical statements.
+_C_ — A satisfiable arithmetic circuit abstraction of logical statements.
 
-$\lambda​$ - A random number, generated at the 'setup' phase - commonly referred to as 'toxic waste', because knowledge of $\lambda​$ would allow an untrustworthy party to create 'false' proofs which would verify as 'true'. $\lambda​$ must be destroyed.
+_lambda​_ - A random number, generated at the 'setup' phase - commonly referred to as 'toxic waste', because knowledge of _lambda​_ would allow an untrustworthy party to create 'false' proofs which would verify as 'true'. _lambda​_ must be destroyed.
 
-$pk​$ - The proving key for a particular circuit $C​$.
+_pk​_ - The proving key for a particular circuit _C​_.
 
-$vk$ - The verifying key for a particular circuit $C$.
+_vk_ - The verification key for a particular circuit _C_.
 
-Both $pk​$ and $vk​$ are generated as a pair by some function $G​$:
-$$(pk, vk) = G(\lambda, C)​$$
+Both _pk​_ and _vk​_ are generated as a pair by some function _G​_:
+_(pk, vk) = G(lambda, C)​_
 
-Note: $C$ can be represented unambiguously by either of $pk$ or $vk$. In zk-SNARK constructions, $vk$ is much smaller in size than $pk$, so as to enable succinct verification on-chain. Hence, $vk$ is the representative of $C$ that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `verifyingKeyId`, where `verifyingKeyId` serves as a more succinct mapping to $vk$.
+Note: _C_ can be represented unambiguously by either of _pk_ or _vk_. In zk-SNARK constructions, _vk_ is much smaller in size than _pk_, so as to enable succinct verification on-chain. Hence, _vk_ is the representative of _C_ that is 'known' to the contract. Therefore, we can identify each circuit uniquely through some `verificationKeyId`, where `verificationKeyId` serves as a more succinct mapping to _vk_.
 
-$w$ - A 'private witness' string. A private argument to the circuit $C$ known only to the prover, which, when combined with the `inputs` argument $x$, comprises an argument of knowledge which satisfies the circuit $C$.
+_w_ - A 'private witness' string. A private argument to the circuit _C_ known only to the prover, which, when combined with the `inputs` argument _x_, comprises an argument of knowledge which satisfies the circuit _C_.
 
-$x$ or `inputs` - A vector of 'Public Inputs'. A public argument to the circuit $C$ which, when combined with the private witness string $w$, comprises an argument of knowledge which satisfies the circuit $C$.
+_x_ or `inputs` - A vector of 'Public Inputs'. A public argument to the circuit _C_ which, when combined with the private witness string _w_, comprises an argument of knowledge which satisfies the circuit _C_.
 
-$\pi$ or `proof` - an encoded vector of values which represents the 'prover's' 'argument of knowledge' of values $w$ and $x$ which satisfy the circuit $C$.
-$$\pi = P(pk, x, w)$$.
+_pi_ or `proof` - an encoded vector of values which represents the 'prover's' 'argument of knowledge' of values _w_ and _x_ which satisfy the circuit _C_.
+_pi = P(pk, x, w)_.
 
-The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form $\pi​$) through some verification function $V​$.
+The ultimate purpose of a Verifier contract, as specified in this EIP, is to verify a proof (of the form _pi​_) through some verification function _V​_.
 
-$$V(vk, x, \pi)=\begin{cases}
-    1, & \text{if $\exists w\ s.t.\ C(x,w)=1$}.\\
-    0, & \text{otherwise}.
-  \end{cases}​$$
-The `verify()` function of this specification serves the purpose of $V​$; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
+_V(vk, x, pi) = 1_, if there exists a _w_ s.t. _C(x,w)=1_.
+_V(vk, x, pi) = 0_, otherwise.
+
+The `verify()` function of this specification serves the purpose of _V​_; returning either `true` (the proof has been verified to satisfy the arithmetic circuit) or `false` (the proof has not been verified).
+
+### Functions
+
+#### `verify`
+The `verify` function forms the 'crux' this standard. The parameters are intended to be as generic as possible, to allow for verification of any zk-snark:
+
+- `proof`
+Specified as `uint256[]`.
+`uint256` is the most appropriate type for elliptic curve operations over a finite field. Indeed, this type is used in the predominant 'Pairing library' implementation of zk-snarks by Christian Reitweissner.
+A one-dimensional dynamic array has been chosen for several reasons:
+
+  - Dynamic: There are several possible methods for producing a zk-snark proof, including PGHR13, G16, GM17, and future methods might be developed in future. Although each method may produce differently sized proof objects, a dynamic array allows for these differing sizes.
+  - Array: An array has been chosen over a 'struct' object, because it is currently easier to pass dynamic arrays between functions in Solidity. Any proof 'struct' can be 'flattened' to an array and passed to the `verify` function. Interpretation of that flattened array is the responsibility of the implemented body of the function. Example implementations demonstrate that this can be achieved.
+  - One-dimensional: A one-dimensional array has been chosen over multi-dimensional array, because it is currently easier to work with one-dimensional arrays in Solidity. Any proof can be 'flattened' to a one-dimensional array and passed to the `verify` function. Interpretation of that flattened array is the responsibility of the implemented body of the Adhering Contract. Example implementations demonstrate that this can be achieved.
+
+- `inputs`
+Specified as `uint256[]`.
+`uint256` is the most appropriate type for elliptic curve operations over a finite field. Indeed, this type is used in the predominant 'Pairing library' implementation of zk-snarks by Christian Reitweissner.
+The number of inputs will vary in size, depending on the number of 'public inputs' of the arithmetic circuit being verified against. In a similar vein to the `proof` parameter, a one-dimensional dynamic array is general enough to cope with any set of inputs to a zk-snark.
+
+- `verificationKeyId`
+A verification key (for a particular arithmetic circuit) only needs to be stored on-chain once. Any proof (relating to the underlying arithmetic circuit) can then be verified against that verification key. Given this, it would be unnecessary (from a 'gas cost' point of view) to pass a duplicate of the full verification key to the `verify` function every time a new `(proof, inputs)` pair is passed in. We do however need to tell the Adhering Verifier Contract which verification key corresponds to the `(proof, inputs)` pair being passed in. A `verificationKeyId` serves this purpose - it uniquely represents a verification key as a `bytes32` id. A method for uniquely assigning a `verificationKeyId` to a verification key is the responsibility of the implemented body of the Adhering Contract.
+
+
 
 
 ## Backwards Compatibility

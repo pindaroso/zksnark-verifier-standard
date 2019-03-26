@@ -146,35 +146,35 @@ contract('PGHR13_v0', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubmi
   })
 
 
-  describe('verifyFromRegistry() (plain evaluation - does not try to update the registry)', function () {
-
-    beforeEach(async function () {
-      await verifier_registry.registerVk(vk_pghr_uint, [pghr13_v0.address], {from: vkSubmitter})
-    })
-
-    it("stores the pghr verifier's address in the verifier_registry", async function () {
-
-      let _verifier = await verifier_registry.getVerifierContractAddress(pghr13_v0.address)
-      assert.equal(_verifier, pghr13_v0.address)
-    })
-
-    it("evaluates a TRUE proof_pghr as true", async function () {
-      //let _registry = await pghr13_v0.R.call()
-      //console.log(_registry)
-
-      let _result = await pghr13_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_pghr_uint, inputs, vkId_pghr, {from: verifier_registry.address, gas: 6500000})
-
-      assert.equal(_result, true)
-
-    })
-    it("evaluates a FALSE proof_pghr as false", async function () {
-
-      let _result = await pghr13_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_pghr_false_uint, inputs, vkId_pghr, {from: verifier_registry.address, gas: 6500000})
-
-      assert.equal(_result, false)
-
-    })
-  })
+  // describe('verifyFromRegistry() (plain evaluation - does not try to update the registry)', function () {
+  //
+  //   beforeEach(async function () {
+  //     await verifier_registry.registerVk(vk_pghr_uint, [pghr13_v0.address], {from: vkSubmitter})
+  //   })
+  //
+  //   it("stores the pghr verifier's address in the verifier_registry", async function () {
+  //
+  //     let _verifier = await verifier_registry.getVerifierContractAddress(pghr13_v0.address)
+  //     assert.equal(_verifier, pghr13_v0.address)
+  //   })
+  //
+  //   it("evaluates a TRUE proof_pghr as true", async function () {
+  //     //let _registry = await pghr13_v0.R.call()
+  //     //console.log(_registry)
+  //
+  //     let _result = await pghr13_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_pghr_uint, inputs, vkId_pghr, {from: verifier_registry.address, gas: 6500000})
+  //
+  //     assert.equal(_result, true)
+  //
+  //   })
+  //   it("evaluates a FALSE proof_pghr as false", async function () {
+  //
+  //     let _result = await pghr13_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_pghr_false_uint, inputs, vkId_pghr, {from: verifier_registry.address, gas: 6500000})
+  //
+  //     assert.equal(_result, false)
+  //
+  //   })
+  // })
 
 
   describe('verify() (tries to update the registry)', function () {

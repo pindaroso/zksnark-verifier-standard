@@ -154,36 +154,36 @@ contract('GM17_v0', ([_, registryOwner, verifierOwner, vkSubmitter, proofSubmitt
   })
 
 
-  describe('verifyFromRegistry() (plain evaluation - does not try to update the registry)', function () {
-
-    beforeEach(async function () {
-      await verifier_registry.registerVk(vk_gm_uint, [gm17_v0.address], {from: vkSubmitter})
-    })
-
-    it("stores the verifier's address in the verifier_registry", async function () {
-
-      let _verifier = await verifier_registry.getVerifierContractAddress(gm17_v0.address)
-      assert.equal(_verifier, gm17_v0.address)
-    })
-
-    it("evaluates a TRUE proof_gm as true", async function () {
-      //let _registry = await gm17_v0.R.call()
-      //console.log(_registry)
-
-      let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 6500000})
-
-      assert.equal(_result, true)
-
-    })
-
-    it("evaluates a FALSE proof_gm as false", async function () {
-
-      let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_false_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 6500000})
-
-      assert.equal(_result, false)
-
-    })
-  })
+  // describe('verifyFromRegistry() (plain evaluation - does not try to update the registry)', function () {
+  //
+  //   beforeEach(async function () {
+  //     await verifier_registry.registerVk(vk_gm_uint, [gm17_v0.address], {from: vkSubmitter})
+  //   })
+  //
+  //   it("stores the verifier's address in the verifier_registry", async function () {
+  //
+  //     let _verifier = await verifier_registry.getVerifierContractAddress(gm17_v0.address)
+  //     assert.equal(_verifier, gm17_v0.address)
+  //   })
+  //
+  //   it("evaluates a TRUE proof_gm as true", async function () {
+  //     //let _registry = await gm17_v0.R.call()
+  //     //console.log(_registry)
+  //
+  //     let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 6500000})
+  //
+  //     assert.equal(_result, true)
+  //
+  //   })
+  //
+  //   it("evaluates a FALSE proof_gm as false", async function () {
+  //
+  //     let _result = await gm17_v0.methods['verifyFromRegistry(uint256[],uint256[],bytes32)'].call(proof_gm_false_uint, inputs, vkId_gm, {from: verifier_registry.address, gas: 6500000})
+  //
+  //     assert.equal(_result, false)
+  //
+  //   })
+  // })
 
 
   describe('verify() (tries to update the registry)', function () {

@@ -177,7 +177,7 @@ contract Verifier_Registry {
       Verifier_Interface verifierContract;
       verifierContract = Verifier_Interface(_verifierContract);
 
-      result = verifierContract.verifyFromRegistry(_proof, _inputs, _vkId);
+      result = verifierContract.verify(_proof, _inputs, _vkId);
 
       emit NewAttestation(proofId, _verifierContract, result);
 

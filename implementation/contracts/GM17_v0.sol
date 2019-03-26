@@ -73,17 +73,6 @@ contract GM17_v0 is Ownable {
       return result;
   }
 
-  function verifyFromRegistry(uint256[] calldata _proof, uint256[] calldata _inputs, bytes32 _vkId) external onlyRegistry returns (bool result) {
-
-      if (verificationCalculation(_proof, _inputs, _vkId) == 0) {
-          result = true;
-      } else {
-          result = false;
-      }
-
-      return result;
-  }
-
   //NOTE: this is an internal function - made public only for truffle testing.
   function verificationCalculation(uint256[] memory _proof, uint256[] memory _inputs, bytes32 _vkId) public returns (uint) {
 
