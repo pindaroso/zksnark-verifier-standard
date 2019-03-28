@@ -28,7 +28,9 @@ zk-SNARKs are a promising area of interest for the Ethereum community. Key appli
 
 A standard interface for registering all zk-SNARKs will allow applications to more easily implement private transactions, private contracts, and scaling solutions; and to extract and interpret the limited information which gets emitted during zk-SNARK verifications.
 
-TODO: Explain the motivation for standardizing a registry, other than simply standardizing the verifier interactions.
+:warning: TODO: Explain the motivation for standardizing a registry, other than simply standardizing the verifier interactions.
+
+⚠️ TODO: Explain the benefits to and perspective of a consumer of information. I.e. the thing that interfaces with the standard verifier registry.
 
 ## Specification
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
@@ -40,6 +42,7 @@ pragma solidity ^0.5.6;
 /// @title EIP-XXXX zk-SNARK Verifier Registry Standard
 /// @dev See https://github.com/EYBlockchain/zksnark-verifier-standard
 ///  Note: the ERC-165 identifier for this interface is 0xXXXXXXXXX.
+/// ⚠️ TODO: Set the interface identifier
 interface EIP-XXXX /* is ERC165 */ {
 
   event NewProofSubmitted(bytes32 indexed _proofId, uint256[] _proof, uint64[] _inputs);
@@ -91,27 +94,35 @@ interface ERC165 {
 ## Rationale
 <!--The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages. The rationale may also provide evidence of consensus within the community, and should discuss important objections or concerns raised during discussion.-->
 
-TO BE COMPLETED
+⚠️ TODO: Add Rationale section.
 
+### Backwards Compatibility
 
-## Backwards Compatibility
 <!--All EIPs that introduce backwards incompatibilities must include a section describing these incompatibilities and their severity. The EIP must explain how the author proposes to deal with these incompatibilities. EIP submissions without a sufficient backwards compatibility treatise may be rejected outright.-->
 
-TO BE COMPLETED
+⚠️ TODO: Add Backwards Compatibility section.
 
-## Test Cases
+### Test Cases
 
 <!--Test cases for an implementation are mandatory for EIPs that are affecting consensus changes. Other EIPs can choose to include links to test cases if applicable.-->
 
 Truffle tests of example implementations are included in this Repo.
+
+⚠️ TODO: Reference specific test cases because there are many currently in the repository.
 
 
 ## Implementations
 <!--The implementations must be completed before any EIP is given status "Final", but it need not be completed before the EIP is accepted. While there is merit to the approach of reaching consensus on the specification and rationale before writing code, the principle of "rough consensus and running code" is still useful when it comes to resolving many discussions of API details.-->
 Detailed example implementations and Truffle tests of these example implementations are included in this Repo.
 
+⚠️ TODO: Update referenced verifier registry implementations so that they are ready-to-deploy or reference deployed versions of those implementations. At current, the referenced code specifically states "DO NOT USE THIS IN PRODUCTION".
+
+⚠️ TODO: Provide reference to an implementation which interrogates a standard verifier registry contract that implements this standard.
+
 
 ## References
+
+⚠️ TODO: Update references and confirm that each reference is cited (parenthetical documentation not necessary) in the text.
 
 **Standards**
 
