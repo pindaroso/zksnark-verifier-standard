@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EYBlockchain/ZKPStandards.git"
+    "url": "git+https://github.com/EYBlockchain/zksnark-verifier-standard.git"
   },
   "author": "MichaelConnorOfficial",
   "license": "ISC",
