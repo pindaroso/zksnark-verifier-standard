@@ -29,6 +29,8 @@ A standard interface for verifying all zk-SNARKs will allow applications to more
 
 This standard was initially proposed by EY, and was inspired in particular by the requirements of businesses wishing to keep their agreements, transactions, and supply chain activities confidential—all whilst still benefiting from the commonly cited strengths of blockchains and smart contracts.
 
+:warning: TODO: Explain the benefits to and perspective of a consumer of information. I.e. the thing that interfaces with the standard verifier.
+
 ## Specification
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
@@ -37,7 +39,7 @@ Terminology in this specification is used consistently with libsnark, as provide
 * Adhering Contract — A Verifier contract which adheres to this specification.
 * Arithmetic circuit: An abstraction of logical statements into addition and multiplication gates.
 * Public Inputs: often denoted as a vector 'x' in zk-SNARKs literature, and denoted `inputs` in this interface. An arithmetic circuit can be thought of as taking two parameters; the Public Inputs, 'x', and a secret 'witness', 'w'. This interface standardises functions which can load the `inputs` into an Adhering Contract.
-* Proof: A 'prover' who wants to 'prove' knowledge of some secret witness 'w' (which satisfies an arithmetic circuit), generates a `proof` from: the circuit's Proving Key; their secret witness 'w'; and its corresponding Public Inputs 'x'. Together, a pair `(proof, inputs)` of satisfying `inputs` and their corresponding `proof` forms a zk-snark.
+* Proof: A 'prover' who wants to 'prove' knowledge of some secret witness 'w' (which satisfies an arithmetic circuit), generates a `proof` from: the circuit's Proving Key; their secret witness 'w'; and its corresponding Public Inputs 'x'. Together, a pair `(proof, inputs)` of satisfying `inputs` and their corresponding `proof` forms a zk-SNARK.
 * Verification Key: A 'trusted setup' calculation creates both a public 'Proving Key' and a public 'Verification Key' from an arithmetic circuit. This interface does not provide a method for loading a Verification Key onto the blockchain. An Adhering Contract SHALL be able to accept arguments of knowledge (`(proof, inputs)` pairs) for at least one Verification Key. We shall call such Verification Keys 'in-scope' Verification Keys. An Adhering Contract MUST be able to interpret unambiguously a unique `verificationKeyId` for each of its 'in-scope' Verification Keys.
 
 **Every ERC-XXXX compliant verifier contract must implement the `ERCXXXX` and `ERC165` interfaces** (subject to "caveats" below):
@@ -49,14 +51,8 @@ pragma solidity ^0.5.6;
 /// @title EIP-XXXX zk-SNARK Verifier Standard
 /// @dev See https://github.com/EYBlockchain/zksnark-verifier-standard
 ///  Note: the ERC-165 identifier for this interface is 0xXXXXXXXX.
+/// ⚠️ TODO: Calculate interface identifier
 interface EIPXXXX /* is ERC165 */ {
-
-    // EVENTS //////////////////////////////////////////////////////////////////
-
-    /// No events are specified.
-
-    // FUNCTIONS ///////////////////////////////////////////////////////////////
-
     /// @notice Checks the arguments of Proof, through elliptic curve
     ///  pairing functions.
     /// @dev
@@ -71,7 +67,6 @@ interface EIPXXXX /* is ERC165 */ {
     /// @return result The result of the verification calculation. True
     ///  if Proof is valid; false otherwise.
     function verify(uint256[] calldata proof, uint256[] calldata inputs, bytes32 verificationKeyId) external returns (bool result);
-
 }
 ```
 ### Interface
@@ -91,6 +86,10 @@ interface ERC165 {
 <!--The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages. The rationale may also provide evidence of consensus within the community, and should discuss important objections or concerns raised during discussion.-->
 
 ### Taxonomy
+
+⚠️ TODO: Add a specific reference to libsnark here, explaining the choice of variable names.
+
+:warning: TODO: Explain how _C_ may not necessarilly be a satisfiable arithmetic circuit of logical statements. As current, this is a limitation to certain kinds of SNARKS. Whereas the source references also mention polynomials, and other applications.
 
 _C_ — A satisfiable arithmetic circuit abstraction of logical statements.
 
@@ -122,35 +121,32 @@ The `verify()` function of this specification serves the purpose of _V​_; retu
 ### Functions
 
 #### `verify`
-The `verify` function forms the 'crux' this standard. The parameters are intended to be as generic as possible, to allow for verification of any zk-snark:
+The `verify` function forms the crux this standard. The parameters are intended to be as generic as possible, to allow for verification of any zk-SNARK:
 
 - `proof`
-Specified as `uint256[]`.
-`uint256` is the most appropriate type for elliptic curve operations over a finite field. Indeed, this type is used in the predominant 'Pairing library' implementation of zk-snarks by Christian Reitweissner.
-A one-dimensional dynamic array has been chosen for several reasons:
-
-  - Dynamic: There are several possible methods for producing a zk-snark proof, including PGHR13, G16, GM17, and future methods might be developed in future. Although each method may produce differently sized proof objects, a dynamic array allows for these differing sizes.
+  Specified as `uint256[]`.
+  `uint256` is the most appropriate type for elliptic curve operations over a finite field. Indeed, this type is used in the predominant 'Pairing library' implementation of zk-SNARKs by Christian Reitweissner.
+  A one-dimensional dynamic array has been chosen for several reasons:
+  - Dynamic: There are several possible methods for producing a zk-SNARK proof, including PGHR13, G16, GM17, and future methods might be developed in future. Although each method may produce differently sized proof objects, a dynamic array allows for these differing sizes.
   - Array: An array has been chosen over a 'struct' object, because it is currently easier to pass dynamic arrays between functions in Solidity. Any proof 'struct' can be 'flattened' to an array and passed to the `verify` function. Interpretation of that flattened array is the responsibility of the implemented body of the function. Example implementations demonstrate that this can be achieved.
   - One-dimensional: A one-dimensional array has been chosen over multi-dimensional array, because it is currently easier to work with one-dimensional arrays in Solidity. Any proof can be 'flattened' to a one-dimensional array and passed to the `verify` function. Interpretation of that flattened array is the responsibility of the implemented body of the Adhering Contract. Example implementations demonstrate that this can be achieved.
 
 - `inputs`
-Specified as `uint256[]`.
-`uint256` is the most appropriate type for elliptic curve operations over a finite field. Indeed, this type is used in the predominant 'Pairing library' implementation of zk-snarks by Christian Reitweissner.
-The number of inputs will vary in size, depending on the number of 'public inputs' of the arithmetic circuit being verified against. In a similar vein to the `proof` parameter, a one-dimensional dynamic array is general enough to cope with any set of inputs to a zk-snark.
+  Specified as `uint256[]`.
+  `uint256` is the most appropriate type for elliptic curve operations over a finite field. Indeed, this type is used in the predominant 'Pairing library' implementation of zk-SNARKs by Christian Reitweissner.
+  The number of inputs will vary in size, depending on the number of 'public inputs' of the arithmetic circuit being verified against. In a similar vein to the `proof` parameter, a one-dimensional dynamic array is general enough to cope with any set of inputs to a zk-SNARK.
 
 - `verificationKeyId`
-A verification key (for a particular arithmetic circuit) only needs to be stored on-chain once. Any proof (relating to the underlying arithmetic circuit) can then be verified against that verification key. Given this, it would be unnecessary (from a 'gas cost' point of view) to pass a duplicate of the full verification key to the `verify` function every time a new `(proof, inputs)` pair is passed in. We do however need to tell the Adhering Verifier Contract which verification key corresponds to the `(proof, inputs)` pair being passed in. A `verificationKeyId` serves this purpose - it uniquely represents a verification key as a `bytes32` id. A method for uniquely assigning a `verificationKeyId` to a verification key is the responsibility of the implemented body of the Adhering Contract.
-
-
+  A verification key (referencing a particular arithmetic circuit) only needs to be stored on-chain once. Any proof (relating to the underlying arithmetic circuit) can then be verified against that verification key. Given this, it would be unnecessary (from a 'gas cost' point of view) to pass a duplicate of the full verification key to the `verify` function every time a new `(proof, inputs)` pair is passed in. We do however need to tell the Adhering Verifier Contract which verification key corresponds to the `(proof, inputs)` pair being passed in. A `verificationKeyId` serves this purpose - it uniquely represents a verification key as a `bytes32` id. A method for uniquely assigning a `verificationKeyId` to a verification key is the responsibility of the implemented body of the Adhering Contract.
 
 
 ## Backwards Compatibility
 - At the time this EIP was first proposed, there was only one known and working set of Verifier contracts for zk-SNARKs on the Ethereum mainnet - deployed by [EY](https://www.ey.com).
-[EY's](https://www.ey.com) initial [implementation](#implementations) does not exactly adhere to the draft specification of this EIP, but EY have agreed that there is no need to provide backwards compatibility with their initial implementation.
-
+  [EY's](https://www.ey.com) initial [implementation](#implementations) does not exactly adhere to the draft specification of this EIP, but EY have agreed that there is no need to provide backwards compatibility with their initial implementation.
+  - :warning: TODO: Explain rationale why proposer does not adhere with contract but other implementations should.
 - Dr Christian Reitwiessner's excellent [example](#6.5) of a Verifier contract and elliptic curve pairing library has been instrumental in the Ethereum community's experimentation and development of zk-SNARK protocols. Many of the naming conventions of this EIP have been kept consistent with his example.
-
 - Existing zk-SNARK compilers such as [ZoKrates](#6.3), which produce 'Verifier.sol' contracts, do not currently produce Verifier contracts which adhere to this EIP specification.
+  - :warning: TODO: Provide a converter contract or technique which allows ZoKrates verifier.sol contracts to adhere with this EIP.
 
 
 ## Test Cases
@@ -158,13 +154,21 @@ A verification key (for a particular arithmetic circuit) only needs to be stored
 
 Truffle tests of example implementations are included in the test case repository.
 
+⚠️ TODO: Reference specific test cases because there are many currently in the repository.
+
 
 ## Implementations
 <!--The implementations must be completed before any EIP is given status "Final", but it need not be completed before the EIP is accepted. While there is merit to the approach of reaching consensus on the specification and rationale before writing code, the principle of "rough consensus and running code" is still useful when it comes to resolving many discussions of API details.-->
 Detailed example implementations and Truffle tests of these example implementations are included in this repository.
 
+:warning: TODO: Update referenced verifier implementations so that they are ready-to-deploy or reference deployed versions of those implementations. At current, the referenced code specifically states "DO NOT USE THIS IN PRODUCTION".
+
+:warning: TODO: Provide reference to an implementation which interrogates a standard verifier contract that implements this standard.
+
 
 ## References
+
+:warning: TODO: Update references and confirm that each reference is cited (parenthetical documentation not necessary) in the text.
 
 **Standards**
 
