@@ -141,7 +141,7 @@ The `verify` function forms the crux this standard. The parameters are intended 
 
 
 ## Backwards Compatibility
-- At the time this EIP was first proposed, there was one compliant implementation on the Ethereum main net - deployed by [EY](https://www.ey.com).
+- At the time this EIP was first proposed, there was one compliant implementation on the Ethereum main net - deployed by [EY](https://www.ey.com). This was compiled with Solidity 0.4.24 for compatibility with Truffle.
 - Dr Christian Reitwiessner's excellent [example](#6.5) of a Verifier contract and elliptic curve pairing library has been instrumental in the Ethereum community's experimentation and development of zk-SNARK protocols. Many of the naming conventions of this EIP have been kept consistent with his example.
 - Existing zk-SNARK compilers such as [ZoKrates](#6.3), which produce 'Verifier.sol' contracts, do not currently produce Verifier contracts which adhere to this EIP specification.
   - :warning: TODO: Provide a converter contract or technique which allows ZoKrates verifier.sol contracts to adhere with this EIP.
